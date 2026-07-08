@@ -1,0 +1,1 @@
+{"domain": "/work/rleap1/jan.dornhege/MA/data/clear/domain.pddl", "instance": "/work/rleap1/jan.dornhege/MA/data/clear/test/_training_clear_5.pddl", "size": 10000, "result": {"putdown": [], "pickup": [0], "stack": [1], "unstack": [1]}}

@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
+import ndlm.configs
 
 class transitiveClosure(nn.Module):
     def __init__(self):
@@ -149,7 +150,8 @@ class RRMinMaxAttention(nn.Module):
 
         #reshape to (b, 2*r*r, o, o)
         b, r1, r2, o, _ = scores.shape
-        scores = scores.reshape(b, 2 * r1 * r2, o, o)  # [b, 2*r*r, o, o]
+
+        scores = scores.reshape(b, 2 * roles.shape[1] * roles.shape[1], o, o)  # [b, 2*r*r, o, o]
         # append transposed roles
         scores = torch.cat([scores, roles_T], dim=1)  # final shape: [b, 2*r*r + r, o, o]
 
@@ -362,3 +364,41 @@ class Strict_Layer(nn.Module):
         updated_roles = self.R_ffn(cat_roles)  # (batch, out_roles, num_objects, num_objects)
         
         return updated_concepts, updated_roles
+    
+
+
+
+
+class NLM_adapter(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.config = config
+        
+        self.model = MultiLayerNDLM(
+            self.config.IN_CONCEPTS, 
+            self.config.IN_ROLES+1, 
+            self.config.OUT_CONCEPTS,
+            self.config.OUT_ROLES,
+            self.config
+        )
+        
+    def forward(self, C,R):
+        if C is None:
+            C = torch.zeros(R.size(0), R.size(1), 0, device=R.device)
+        if R is None:
+            R = torch.zeros(C.size(0), C.size(1), C.size(1), 0, device=C.device)
+        C = C.permute(0, 2, 1)        # [B, C, N]
+        R = R.permute(0, 3, 1, 2)     # [B, R, N, N]
+        #add identity role to R
+        R= torch.cat([R, torch.eye(R.size(2), device=R.device).unsqueeze(0).unsqueeze(0).expand(R.size(0), 1, R.size(2), R.size(2))], dim=1)
+
+        out_C, out_R = self.model(C,R)
+        
+        if self.config.OUT_ROLES>=1:
+            out_R = out_R.permute(0, 2, 3, 1)   # [B, N, N, R]
+            return out_R
+        elif self.config.OUT_CONCEPTS>=1:
+            out_C = out_C.permute(0, 2, 1)      # [B, N, C]
+            return out_C
+        else:
+            raise ValueError("At least one of OUT_CONCEPTS or OUT_ROLES must be >=1 in the config.")

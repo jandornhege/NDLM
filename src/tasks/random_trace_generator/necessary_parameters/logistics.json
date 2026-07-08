@@ -1,0 +1,1 @@
+{"domain": "/work/rleap1/jan.dornhege/MA/data/logistics/logistics.pddl", "instance": "/work/rleap1/jan.dornhege/MA/data/logistics/logistics-1.pddl", "size": 5000, "result": {"load": [0, 1], "unload": [0], "drive": [1], "fly": [0, 2]}}

@@ -1,0 +1,1 @@
+{"domain": "/work/rleap1/jan.dornhege/MA/data/delivery/domain.pddl", "instance": "/work/rleap1/jan.dornhege/MA/data/delivery/train/instance_3_3_0.pddl", "size": 5000, "result": {"pick-package": [1], "drop-package": [], "move": [2]}}

@@ -1,0 +1,1 @@
+{"domain": "/work/rleap1/jan.dornhege/MA/data/satellite/satellite.pddl", "instance": "/work/rleap1/jan.dornhege/MA/data/satellite/satellite_9.pddl", "size": 100000, "result": {"switch_on": [0], "switch_off": [1], "calibrate": [1], "turn_to": [0, 1], "take_image": [2, 3]}}

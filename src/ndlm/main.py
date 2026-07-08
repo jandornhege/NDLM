@@ -5,15 +5,9 @@ import torch.nn as nn
 import torch.optim as optim
 
 import sys
-from data_encoding import create_dataset_from_file, create_dataset_from_dir
 import time
 
-import configs
-
-from modules import MultiLayerNDLM
-
-
-def main(train, test, config):
+def main(train_dataset, test_dataset, config, model):
     #expected data format:
     # train and test are lists of datasets, where each dataset is a list of tuples (concepts, roles, c_targets, r_targets)
     # concepts: (num_concepts, num_objects)
@@ -21,27 +15,10 @@ def main(train, test, config):
     # c_targets: (num_out_concepts, num_objects)
     # r_targets: (num_out_roles, num_objects, num_objects)
 
-    print(f"Loaded {len(train)} training samples and {len(test)} testing samples.")
+    print(f"Loaded {len(train_dataset)} training samples and {len(test_dataset)} testing samples.")
 
-
-    train_dataset = []
-    for dataset in train:
-        c = torch.stack([item[0] for item in dataset])  # (num_samples, num_concepts, num_objects)
-        r = torch.stack([item[1] for item in dataset])      # (num_samples, num_roles, num_objects, num_objects)
-        c_targets = torch.stack([item[2] for item in dataset])    # (num_samples, num_out_concepts, num_objects)
-        r_targets = torch.stack([item[3] for item in dataset])    # (num_samples, num_out_roles, num_objects, num_objects)
-        train_dataset.append((c, r, c_targets, r_targets))
-        print("train_shapes:", c.shape, r.shape, c_targets.shape, r_targets.shape)
-    
-    test_dataset = []
-    for dataset in test:
-        c = torch.stack([item[0] for item in dataset])  # (num_samples, num_concepts, num_objects)
-        r = torch.stack([item[1] for item in dataset])      # (num_samples, num_roles, num_objects, num_objects)
-        c_targets = torch.stack([item[2] for item in dataset])    # (num_samples, num_out_concepts, num_objects)
-        r_targets = torch.stack([item[3] for item in dataset])    # (num_samples, num_out_roles, num_objects, num_objects)
-        test_dataset.append((c, r, c_targets, r_targets))
-        print("test_shapes:", c.shape, r.shape, c_targets.shape, r_targets.shape)
-        
+   
+   
     in_concepts = train_dataset[0][0].shape[1]
     in_roles = train_dataset[0][1].shape[1]
     out_concepts = train_dataset[0][2].shape[1]
@@ -49,7 +26,7 @@ def main(train, test, config):
     
     # Initialize model, loss, optimizer
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = MultiLayerNDLM(in_concepts, in_roles, out_concepts, out_roles, config).to(device)
+    model = model.to(device)
     
     # Cross Entropy loss for multi-label (applies Sigmoid)
     criterion = nn.BCEWithLogitsLoss()    
@@ -58,12 +35,39 @@ def main(train, test, config):
     # ------------------------------
     # Training loop
     # ------------------------------
+    def run_test_round(epoch_label):
+        model.eval()
+        with torch.no_grad():
+            for i, (concepts, roles, c_targets, r_targets) in enumerate(test_dataset):
+                concepts = concepts.to(device)
+                roles = roles.to(device)
+                c_targets = c_targets.to(device)
+                r_targets = r_targets.to(device)
+
+                out_concepts, out_roles = model(concepts, roles)
+
+                c_preds = (out_concepts > 0.5).int()
+                c_missclassifcations = (c_preds != c_targets).sum().item()
+                c_accuracy = (c_preds == c_targets).float().mean()
+
+                r_preds = (out_roles > 0.5).int()
+                role_missclassifcations = (r_preds != r_targets).sum().item()
+                r_accuracy = (r_preds == r_targets).float().mean()
+
+                print(f"Test Misclassifications (Dataset {i}) [{epoch_label}]: c:{c_missclassifcations}, r:{role_missclassifcations}", flush=True)
+                print(f"Test Accuracy (Dataset {i}) [{epoch_label}]: c:{c_accuracy}, r:{r_accuracy}", flush=True)
+
+        model.train()
+
+    early_stop_patience = 10
+    zero_miss_streak = 0
     
     total_accs=[]
     time_stats = []
     for epoch in range(1, config.NUM_EPOCHS+1):
         
         t0=time.time()
+        epoch_total_miss = 0
 
         # Iterate over datasets (dataset is a tuple of (concepts, roles, c_targets, r_targets), such that instances within the datasets have the same number of objects)
         for ds_idx, (concepts, roles, c_targets, r_targets) in enumerate(train_dataset):
@@ -113,35 +117,31 @@ def main(train, test, config):
             print(f"           | Loss: {avg_loss:.4f}", flush=True)
             print(f"           | Time taken: {time.time()-t0:.4f} seconds", flush=True)
 
+            epoch_total_miss += sum(i[0] for i in miss) + sum(i[1] for i in miss)
+
             
         time_stats.append(time.time()-t0)
         total_accs.append((sum([i[0] for i in accs])/len(accs), sum([i[1] for i in accs])/len(accs)))
 
-        if epoch % config.TEST_INTERVAL == 0:
+        if epoch_total_miss == 0:
+            zero_miss_streak += 1
+        else:
+            zero_miss_streak = 0
 
+        if zero_miss_streak >= early_stop_patience:
+            print(
+                f"Early stopping at epoch {epoch}: training misclassifications were 0 "
+                f"for {early_stop_patience} consecutive epochs.",
+                flush=True,
+            )
+            print("Running one additional test round before stopping.", flush=True)
+            run_test_round(f"epoch {epoch} (final)")
+            break
+
+        if epoch % config.TEST_INTERVAL == 0:
             # ------------------------------
             # Test outputs
             # ------------------------------
-            with torch.no_grad():
-                for i, (concepts, roles, c_targets, r_targets) in enumerate(test_dataset):
-                    concepts = concepts.to(device) # (num_concepts, num_objects)
-                    roles = roles.to(device) # (num_roles, num_objects, num_objects)
-                    c_targets = c_targets.to(device)
-                    r_targets = r_targets.to(device)
-
-                    
-                    out_concepts, out_roles = model(concepts, roles)
-                    
-                    c_preds = (out_concepts > 0.5).int()
-                    c_missclassifcations = (c_preds != c_targets).sum().item()
-                    c_accuracy = (c_preds == c_targets).float().mean()
-
-                    r_preds = (out_roles > 0.5).int()   # Predicted classes for roles
-                    role_missclassifcations = (r_preds != r_targets).sum().item()
-                    r_accuracy = (r_preds == r_targets).float().mean()
-                    
-                    
-                    print(f"Test Misclassifications (Dataset {i}): c:{c_missclassifcations}, r:{role_missclassifcations}", flush=True)
-                    print(f"Test Accuracy (Dataset {i}): c:{c_accuracy}, r:{r_accuracy}", flush=True)
+            run_test_round(f"epoch {epoch}")
 
     return model
