@@ -16,7 +16,9 @@ TASK_NAMES=(
 	delivery
 )
 
-CONFIGS=(c5 c6 c7 c8 c9 c10 c11 c12)
+# CONFIGS=(c5 c6 c7 c8 c9 c10 c11 c12)
+
+CONFIGS=(c13 c14 c15 c16 c17 c18 c19 c20)
 
 TASK_ID=$((SLURM_ARRAY_TASK_ID % 4))
 CONFIG_ID=$((SLURM_ARRAY_TASK_ID / 4))

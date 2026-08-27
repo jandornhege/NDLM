@@ -1,0 +1,1 @@
+{"domain": "/work/rleap1/jan.dornhege/NDLM/src/data/blocks_3_on_pairs/domain.pddl", "instance": "/work/rleap1/jan.dornhege/NDLM/src/data/blocks_3_on_pairs/train/instance_same_xy_goal_true.pddl", "size": 0, "result": {"stack": [0, 1], "newtower": [0], "move": [0, 2]}}

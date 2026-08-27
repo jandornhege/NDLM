@@ -24,7 +24,7 @@ id_matrix= lambda size: [[1 if j==i else 0 for j in range(size)] for i in range(
 color_concept_generator= lambda image_length, num_colors, color_i: [0]*image_length + [1 if j==color_i else 0 for j in range(num_colors)]
 
 
-def construct_single_image_encoding(image_array, solution_array, num_colors, config, max_length=None):
+def construct_single_image_encoding(image_array, solution_array, num_colors, config=None, max_length=None):
     data=[]
     for t in range(len(image_array)):
         target_concept= [1 if i==t else 0 for i in range(len(image_array))]+[0]*num_colors
@@ -70,27 +70,31 @@ def construct_single_image_encoding(image_array, solution_array, num_colors, con
                 roles = torch.cat([roles, torch.zeros((roles.shape[0], padding_needed, roles.shape[2]))], dim=1)
                 roles = torch.cat([roles, torch.zeros((roles.shape[0], roles.shape[1], padding_needed))], dim=2)
                 target_concept += [0]*padding_needed
+                target_roles = torch.zeros((0,roles.shape[1], roles.shape[2]), dtype=torch.float32)
+            else:
+                target_roles = torch.zeros((0,roles.shape[1], roles.shape[2]), dtype=torch.float32)
         target_concept = torch.tensor(target_concept, dtype=torch.float32)
         target_concept = target_concept.unsqueeze(0) # num_out_concepts, num_objects
-        data.append( (concepts, roles, target_concept, torch.zeros(0,len(image_array)+num_colors, len(image_array)+num_colors, dtype=torch.float32)) )
+        data.append( (concepts, roles, target_concept, target_roles))
+                    #torch.zeros(0,len(image_array)+num_colors, len(image_array)+num_colors, dtype=torch.float32)) )
     return data
 
 
-def construct_problem_encoding(problem_data, num_colors, config, max_length=None):
+def construct_problem_encoding(problem_data, num_colors, config=None, max_length=None):
     dataset = []
     for image_array, solution_array in problem_data:
         image_encoding = construct_single_image_encoding(image_array, solution_array, num_colors, config, max_length=max_length)
         dataset.extend(image_encoding)
     return dataset
 
-def create_dataset_from_file(file_path, file_name, config, max_length=None):
+def create_dataset_from_file(file_path, file_name, config =None , max_length=None):
     train_list, test_list = load_problem(file_path, file_name)
     num_colors = 10  # Example number of colors
     train_dataset = construct_problem_encoding(train_list, num_colors, config, max_length=max_length)
     test_dataset = construct_problem_encoding(test_list, num_colors, config=config, max_length=max_length)
     return train_dataset, test_dataset
 
-def create_dataset_from_dir(dir_path,config):
+def create_dataset_from_dir(dir_path, config = None):
     # figure out maximum length of arrays in dir
     max_length=0
     for name in os.listdir(dir_path):
@@ -105,9 +109,10 @@ def create_dataset_from_dir(dir_path,config):
     for name in os.listdir(dir_path):
         if name.endswith(".json"):
             train_dataset, test_dataset = create_dataset_from_file(dir_path , name, config, max_length=max_length)
-            train_datasets += train_dataset
-            test_datasets += test_dataset
-    
+            train_datasets+= train_dataset
+            test_datasets+=test_dataset
+            # train_datasets.append(train_dataset)
+            # test_datasets.append(test_dataset)
     return train_datasets, test_datasets
 
 if __name__ == "__main__":

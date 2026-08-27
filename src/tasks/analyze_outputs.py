@@ -16,17 +16,18 @@ TRAIN_RE = re.compile(
     r"^Epoch\s+(\d+)\s+\(Dataset\s+(\d+)\)\s+\|\s+Average Accuracy:\s+\(([^,]+),\s*([^\)]+)\)"
 )
 TEST_RE = re.compile(
-    r"^Test Accuracy\s+\(Dataset\s+(\d+)\):\s+c:([^,]+),\s*r:(.+)$"
+    r"^Test Accuracy\s+\(Dataset\s+(\d+)\)(?:\s+\[[^\]]+\])?:\s+c:([^,]+),\s*r:(.+)$"
 )
 TRAIN_MISS_RE = re.compile(
     r"^\|\s*Total Misclassifications:\s*\(([-+]?\d+),\s*([-+]?\d+)\)"
 )
 TEST_MISS_RE = re.compile(
-    r"^Test Misclassifications\s+\(Dataset\s+(\d+)\):\s+c:([-+]?\d+),\s*r:([-+]?\d+)"
+    r"^Test Misclassifications\s+\(Dataset\s+(\d+)\)(?:\s+\[[^\]]+\])?:\s+c:([-+]?\d+),\s*r:([-+]?\d+)"
 )
 LOSS_RE = re.compile(r"^\s*\|\s*Loss:\s+(.+)$")
 LOADED_RE = re.compile(r"^Loaded\s+(\d+)\s+training samples and\s+(\d+)\s+testing samples\.$")
 ACTION_RE = re.compile(r"^Action:\s*([^,]+),")
+OUTPUT_FILE_RE = re.compile(r"output_(\d+(?:\.\d+)?)\.log$")
 
 
 def parse_args() -> argparse.Namespace:
@@ -77,6 +78,8 @@ def parse_log_file(log_path: Path, outputs_dir: Path) -> dict:
     model_bucket = rel_parts[0] if len(rel_parts) > 0 else "unknown"
     c_setting = rel_parts[1] if len(rel_parts) > 1 else "unknown"
     task_name = rel_parts[2] if len(rel_parts) > 2 else "unknown"
+    output_match = OUTPUT_FILE_RE.search(log_path.name)
+    run_timestamp = float(output_match.group(1)) if output_match else None
 
     def new_segment() -> dict:
         return {
@@ -219,6 +222,7 @@ def parse_log_file(log_path: Path, outputs_dir: Path) -> dict:
         "c_setting": c_setting,
         "task": task_name,
         "log_path": str(log_path),
+        "run_timestamp": run_timestamp,
         "subproblems": len(segments),
         "subproblem_names": [seg["subproblem_name"] for seg in segments],
         "train_zero_miss_subproblems": train_zero_subproblems,
@@ -275,7 +279,21 @@ def latest_rows_by_task(rows: list[dict]) -> list[dict]:
     for row in rows:
         key = (row["model_bucket"], row["c_setting"], row["task"])
         current = latest_by_task.get(key)
-        if current is None or row["log_path"] > current["log_path"]:
+        row_ts = row.get("run_timestamp")
+        current_ts = current.get("run_timestamp") if current is not None else None
+        if current is None:
+            latest_by_task[key] = row
+            continue
+        if row_ts is not None and current_ts is not None:
+            if row_ts > current_ts:
+                latest_by_task[key] = row
+            continue
+        if row_ts is not None and current_ts is None:
+            latest_by_task[key] = row
+            continue
+        if row_ts is None and current_ts is not None:
+            continue
+        if row["log_path"] > current["log_path"]:
             latest_by_task[key] = row
     return [latest_by_task[key] for key in sorted(latest_by_task)]
 
@@ -326,25 +344,25 @@ def print_overview(parsed_rows: list[dict], include_failed: bool) -> None:
         print(f"  train_success_subproblems=[{train_success_list}]")
         print(f"  test_success_subproblems=[{test_success_list}]")
 
-    print("\n=== Per task (latest run per model/c/task) ===")
-    for row in latest_rows_by_task(parsed_rows):
-        model_bucket = row["model_bucket"]
-        c_setting = row["c_setting"]
-        task = row["task"]
-        print(
-            f"{model_bucket} / {c_setting} / {task}: "
-            f"subproblems={row['subproblems']} "
-            f"epochs={row['epochs_seen']} "
-            f"train_last_c={float_to_str(row['train_last_c'])} "
-            f"test_last_c={float_to_str(row['test_last_c'])} "
-            f"train_last_miss=({row['train_last_miss_c']},{row['train_last_miss_r']}) "
-            f"test_last_miss=({row['test_last_miss_c']},{row['test_last_miss_r']}) "
-            f"train_ok={'yes' if row['last_train_success_zero_miss'] else 'no'} "
-            f"test_ok={'yes' if row['last_test_success_zero_miss'] else 'no'} "
-            f"test_best_c={float_to_str(row['test_best_c'])} "
-            f"nan_loss={'yes' if row['nan_loss'] else 'no'}"
-        )
-        print(f"    names={', '.join(row.get('subproblem_names', []))}")
+    # print("\n=== Per task (latest run per model/c/task) ===")
+    # for row in latest_rows_by_task(parsed_rows):
+    #     model_bucket = row["model_bucket"]
+    #     c_setting = row["c_setting"]
+    #     task = row["task"]
+    #     print(
+    #         f"{model_bucket} / {c_setting} / {task}: "
+    #         f"subproblems={row['subproblems']} "
+    #         f"epochs={row['epochs_seen']} "
+    #         f"train_last_c={float_to_str(row['train_last_c'])} "
+    #         f"test_last_c={float_to_str(row['test_last_c'])} "
+    #         f"train_last_miss=({row['train_last_miss_c']},{row['train_last_miss_r']}) "
+    #         f"test_last_miss=({row['test_last_miss_c']},{row['test_last_miss_r']}) "
+    #         f"train_ok={'yes' if row['last_train_success_zero_miss'] else 'no'} "
+    #         f"test_ok={'yes' if row['last_test_success_zero_miss'] else 'no'} "
+    #         f"test_best_c={float_to_str(row['test_best_c'])} "
+    #         f"nan_loss={'yes' if row['nan_loss'] else 'no'}"
+    #     )
+    #     print(f"    names={', '.join(row.get('subproblem_names', []))}")
 
 
 def main() -> None:

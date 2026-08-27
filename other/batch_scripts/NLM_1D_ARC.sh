@@ -30,7 +30,7 @@ TASK_NAMES=(
 	1d_scale_dp
 )
 
-CONFIGS=(c5 c6 c7 c8 c9 c10 c11 c12)
+CONFIGS=(c13 c14 c15 c16 c17 c18 c19 c20)
 
 TASK_ID=$((SLURM_ARRAY_TASK_ID % 18))
 CONFIG_ID=$((SLURM_ARRAY_TASK_ID / 18))
@@ -47,4 +47,14 @@ cd /work/rleap1/jan.dornhege/NDLM/src/
 
 export PYTHONPATH=/work/rleap1/jan.dornhege/neural-logic-machines:/work/rleap1/jan.dornhege/neural-logic-machines/third_party/Jacinle:$PYTHONPATH
 
-python tasks/learn_task.py --task 1DARC --name "$TASK_NAME" --model NLM --dump-dir /work/rleap1/jan.dornhege/NDLM/outputs/NLM_1D_ARC/$CONFIG/$TASK_NAME --config-file /work/rleap1/jan.dornhege/NDLM/src/ndlm/config_files/$CONFIG.json
+python tasks/learn_task.py \
+	--task 1DARC \
+	--arc-task-name "$TASK_NAME" \
+	--model NLM \
+	--dump-dir /work/rleap1/jan.dornhege/NDLM/outputs/1D_ARC/NLM_B2_all/$CONFIG/$TASK_NAME \
+	--config-file /work/rleap1/jan.dornhege/NDLM/src/ndlm/config_files/$CONFIG.json \
+	--test-interval 10 \
+	--num-epochs 5000 \
+	--test_supervised \
+	--nlm-breadth 2 \
+	--all

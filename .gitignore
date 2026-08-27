@@ -1,2 +1,14 @@
 outputs/**
 src/data/**
+other/batch_scripts/**
+plots/**
+other/batch_scripts/**.sh
+src/ndlm/__pycache__/configs.cpython-310.pyc
+src/ndlm/__pycache__/configs.cpython-310.pyc
+src/ndlm/__pycache__/configs.cpython-312.pyc
+src/ndlm/__pycache__/configs.cpython-310.pyc
+src/ndlm/__pycache__/main.cpython-312.pyc
+**.pyc
+**/**.pyc
+**.pt
+**.xml

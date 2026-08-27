@@ -1,7 +1,6 @@
 import torch
 import json 
-import ffn_main_general_data as ffn_main
-import config as Config
+import ndlm.configs as Config
 import time
 import argparse
 
@@ -83,6 +82,24 @@ def generate_line_problem(length=5):
         out_concepts[1,i]=1
     return [(in_concepts, in_roles, out_concepts, out_roles)]
 
+
+def get_hard_graphs_dataset(args):
+    if args.graph_problem_type == "cycle":
+        return {"cycle": (generate_cycle_problem(), (generate_cycle_problem()))}
+    elif args.graph_problem_type == "line":
+        line_problems = {}
+        if not hasattr(args, "line_min_length"):
+            args.line_min_length = 2
+        if not hasattr(args, "line_max_length"):
+            args.line_max_length = 33
+        for length in range(args.line_min_length, args.line_max_length + 1):  # Generate line problems of lengths 2 to line_length
+            line_problems[f"line_{length}"] = (generate_line_problem(length=length), generate_line_problem(length=length))
+        return line_problems
+    elif args.graph_problem_type == "star":
+        return {"star": (generate_star_problem(), generate_star_problem())}
+    else:
+        raise ValueError(f"Unknown graph problem type: {args.graph_problem_type}")
+
 def generate_xor_problem():
     in_concepts= torch.zeros((2,4))  # (num_concepts, num_objects)
     in_roles= torch.zeros((0,4,4))  # list of (num_roles, num_objects, num_objects)
@@ -113,6 +130,7 @@ configurations = [
     {"name": "NDLMr+_id","tc": True, "activation": "identity", "strict": False},
     {"name": "NDLMr+_sig","tc": True, "activation": "sigmoid", "strict": False}
     ]
+
 
 
 def get_config(selected_config, name):

@@ -1,24 +1,28 @@
 #!/usr/bin/env python3
 
+from cProfile import label
+from cProfile import label
 from collections import deque
 from collections import defaultdict
 import pymimir.advanced.formalism as formalism
 import pymimir.advanced.search as search
-import pymimir.advanced.datasets as datasets
 import torch
 import os
 import json
 import random
 import time
 import numpy as np
-
+import ndlm.modules as modules
+from my_logging import log
 
 try: 
     import random_trace_generator.general_policy_sampler as gps
     import random_trace_generator.opt_gp_util as opt_gp_util
+    import random_trace_generator.mimir_to_tensors as mimir_to_tensors
 except:
     import general_policy_sampler as gps
     import opt_gp_util
+    import mimir_to_tensors as mimir_to_tensor
 
 def load_parameter_indices(name):
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -37,7 +41,15 @@ def mimir_state_to_concept_role_data(state, problem, only_fluid=False, padding=0
     out_concepts = []
     concept_p = []
     role_p = []
-    domain = problem.get_domain()
+    # Prefer the state-attached problem/repository to avoid index-space mismatches
+    # when states are sampled from a different context than a separately parsed problem.
+    active_problem = problem
+    if hasattr(state, "get_state_repository"):
+        state_repository = state.get_state_repository()
+        if hasattr(state_repository, "get_problem"):
+            active_problem = state_repository.get_problem()
+
+    domain = active_problem.get_domain()
 
     # collect all predicate names and check if all are unary or binary
     fp = list(domain.get_fluent_predicates() )
@@ -60,19 +72,19 @@ def mimir_state_to_concept_role_data(state, problem, only_fluid=False, padding=0
             raise ValueError(f"Predicate {p.get_name()} has arity > 2, which is not supported")
         else:
             raise ValueError(f"Predicate {p.get_name()} has unsupported arity {p.get_arity()}")
-    repositories = problem.get_repositories()
+    repositories = active_problem.get_repositories()
     if hasattr(state, "get_atoms"):
         atoms = state.get_atoms(ignore_static=only_fluid, ignore_fluent=False, ignore_derived=True)
     elif hasattr(state, "get_fluent_atoms"):
         fa = list(state.get_fluent_atoms())
-        sa = list(problem.get_static_initial_atoms())
+        sa = list(active_problem.get_static_initial_atoms())
         if only_fluid:
             sa = []
         atoms = list(repositories.get_fluent_ground_atoms_from_indices(fa)) + sa
     else:
         raise TypeError("Unsupported state object: expected get_atoms or get_fluent_atoms")
     
-    num_objects=len(problem.get_objects())
+    num_objects=len(active_problem.get_objects())
 
     #initialize empty tensors
     concepts_tensor = torch.zeros((len(concept_p), num_objects+padding), dtype=torch.float32)
@@ -118,7 +130,7 @@ def goal_condition_to_concept_role_data(problem, padding=0, predicate_indices=se
 
     def _write_atom(atom, polarity):
         if not polarity:
-            print("Ignoring negative atom in goal condition (not supported in current setup):", atom)
+            log(f"Ignoring negative atom in goal condition (not supported in current setup): {atom}")
             return
         # print("writing atom:", atom, "polarity:", polarity)
         predicate = atom.get_predicate()
@@ -213,7 +225,7 @@ def state_action_to_applicability_data(s, a, problem, parameter_indices, is_appl
     num_objects = len(problem.get_objects())
     out_concepts = torch.ones((1,num_objects+padding), dtype=torch.float32) if is_applicable else torch.zeros((1,num_objects+padding), dtype=torch.float32)
     out_roles = torch.zeros((0, num_objects+padding, num_objects+padding), dtype=torch.float32)  # no role is predicted
-    return (in_c, in_r, out_concepts, out_roles)
+    return (in_c, in_r, out_concepts, out_roles), (c_n, r_n, a_c_n)
 
 def state_pair_to_concept_role_data(s, s2, problem, parameter_indices, label,  predicate_indices=set(), padding=0):
     c1, r1, c1_n, r1_n = mimir_state_to_concept_role_data(s, problem, padding=padding, predicate_indices=predicate_indices)
@@ -359,23 +371,18 @@ def generate_action_transitions_bfs(
 
     ground_action_signatures = set()
     ground_actions_by_schema = _precompute_ground_actions_by_schema(problem, max_actions=max_actions, ignore_type_filtering=ignore_type_filtering, random_seed=random_seed)
-    
     while q and len(seen) < max_states:
         if (
             max_sampling_seconds_per_problem is not None
             and max_sampling_seconds_per_problem > 0
             and (time.time() - sampling_start_time) >= max_sampling_seconds_per_problem
         ):
-            print(
-                f"Stopping BFS sampling early after {max_sampling_seconds_per_problem}s "
-                f"for problem (visited states: {len(seen)}, transitions: {len(out)})."
-            )
+            log(f"Stopping BFS sampling early after {max_sampling_seconds_per_problem}s for problem (visited states: {len(seen)}, transitions: {len(out)}).")
             break
         #change to pop for DFS and popleft for BFS
-        s = q.pop()
+        s = q.popleft()
         # Generate applicable actions
         actions = aag.generate_applicable_actions(s)
-
         observed_projected_signatures = {a.get_action().get_name(): set() for a in actions}
         for a in actions:
             # Apply action to get successor state
@@ -395,7 +402,6 @@ def generate_action_transitions_bfs(
             else:
                 observed_projected_signatures[action_name].add(_projected_action_signature(a, parameter_indices[action_name]))
         
-
         if include_non_applicable:
             for ground_actions in ground_actions_by_schema.values():
                 #check applicability of projected signature by checking if it was observed as applicable for any action in the current state
@@ -412,11 +418,11 @@ def generate_action_transitions_bfs(
 def _prune_empty_action_datasets(combined_dataset):
     """Remove empty per-problem buckets and actions without any remaining data."""
     if combined_dataset:
-        print("Transition counts per instance before pruning:")
+        log("Transition counts per instance before pruning:")
         for action_name, per_problem_data in combined_dataset.items():
             counts = [len(bucket) for bucket in per_problem_data]
             counts_str = ", ".join(f"instance_{idx}: {count}" for idx, count in enumerate(counts))
-            print(f"Action {action_name}: {counts_str}")
+            log(f"Action {action_name}: {counts_str}")
 
     pruned = {}
     for action_name, per_problem_data in combined_dataset.items():
@@ -449,10 +455,7 @@ def optimal_general_policy_bfs(
             and max_sampling_seconds_per_problem > 0
             and (time.time() - sampling_start_time) >= max_sampling_seconds_per_problem
         ):
-            print(
-                f"Stopping optimal GP BFS early after {max_sampling_seconds_per_problem}s "
-                f"for problem (expanded states: {expanded})."
-            )
+            log(f"Stopping optimal GP BFS early after {max_sampling_seconds_per_problem}s for problem (expanded states: {expanded}).")
             break
         t0=time.time()
         #change to pop for DFS and popleft for BFS
@@ -460,13 +463,13 @@ def optimal_general_policy_bfs(
         # Generate applicable actions
         actions = aag.generate_applicable_actions(s)
         data, state_is_goal = data_function(problem, s, actions, search_context)
+        actions = [a for a in actions] 
+        
         if state_is_goal:
-            continue
-        
-        expanded+=1
-        for action_name in data:
-            out[action_name].append(data[action_name])
-        
+            break
+            # continue
+            # log(f"Reached goal state, skipping further expansion. Expanded {expanded} states, queue size: {len(q)}, time for iteration: {time.time()-t0:.2f}s")
+        actions.sort(key=lambda a: 1 if a in data[a.get_action().get_name()]["optimal_actions"] else 0)
         for a in actions:
             # Apply action to get successor state
             s2, _ = state_repo.get_or_create_successor_state(s, a, 0.0)
@@ -475,7 +478,71 @@ def optimal_general_policy_bfs(
                 seen.add(s2)
                 q.append(s2)
             action_name = a.get_action().get_name()
-        print(f"Expanded {expanded} states, queue size: {len(q)}, time for iteration: {time.time()-t0:.2f}s")
+        
+        
+        expanded+=1
+        for action_name in data:
+            out[action_name].append(data[action_name])
+        # log(f"Expanded state {expanded} in {time.time()-t0:.2f}s")
+    return out
+
+
+
+def optimal_general_policy_opt_then_bfs(
+    problem, 
+    max_states,
+    data_function,
+    max_sampling_seconds_per_problem=None,
+    ):
+    ctx_opts = search.SearchContextOptions(search.LiftedOptions(search.LiftedKPKCOptions()))
+    search_context = search.SearchContext.create(problem, ctx_opts)
+    aag = search_context.get_applicable_action_generator()
+    state_repo = search_context.get_state_repository()
+    
+    # Get initial state
+    init, _ = state_repo.get_or_create_initial_state()
+    q = deque([init])
+    seen = {init}
+    out = defaultdict(list)  # (state, action, successor, is_applicable)
+    goal_seen = False
+    expanded = 0
+    sampling_start_time = time.time()
+    while q and expanded < max_states:
+        if (
+            max_sampling_seconds_per_problem is not None
+            and max_sampling_seconds_per_problem > 0
+            and (time.time() - sampling_start_time) >= max_sampling_seconds_per_problem
+        ):
+            log(f"Stopping optimal GP BFS early after {max_sampling_seconds_per_problem}s for problem (expanded states: {expanded}).")
+            break
+        t0=time.time()
+        #change to pop for DFS and popleft for BFS
+        if goal_seen:
+            s = q.popleft()
+        else:
+            s = q.pop()
+        # Generate applicable actions
+        actions = aag.generate_applicable_actions(s)
+        data, state_is_goal = data_function(problem, s, actions, search_context)
+        if state_is_goal:
+            goal_seen = True
+            continue
+        
+        actions = [a for a in actions]
+        actions.sort(key=lambda a: 1 if a in data[a.get_action().get_name()]["optimal_actions"] else 0)
+        for a in actions:
+            # Apply action to get successor state
+            s2, _ = state_repo.get_or_create_successor_state(s, a, 0.0)
+            
+            if s2 not in seen:
+                seen.add(s2)
+                q.append(s2)
+            action_name = a.get_action().get_name()
+        
+        expanded+=1
+        for action_name in data:
+            out[action_name].append(data[action_name])
+        # log(f"Expanded state {expanded} in {time.time()-t0:.2f}s")
     return out
 
 
@@ -512,7 +579,7 @@ def generate_action_model_learning_dataset(
         parameter_indices=parameter_list,
         max_sampling_seconds_per_problem=max_sampling_seconds_per_problem,
     )
-    print(f"Generated {len(transitions)} transitions, processing into dataset...")
+    log(f"Generated {len(transitions)} transitions, processing into dataset...")
 
     if full_applicability:
         states = set([s for s, _, _, _ in transitions])
@@ -525,6 +592,7 @@ def generate_action_model_learning_dataset(
 
     napp={}
     app={}
+    concept_role_names = []
     for s, a, s2, is_applicable in transitions:
         action_name = a.get_action().get_name()
         if len(dataset[action_name])>max_transitions_per_action:
@@ -537,14 +605,13 @@ def generate_action_model_learning_dataset(
             app[action_name]+=1
         else:
             napp[action_name]+=1
-        
         if target_mode == "state":
             # target_state = s2 if is_applicable else s
             if parameter_list is None:
                 parameter_indices = None
             else:
                 parameter_indices = parameter_list[action_name]
-            data_point, names = transition_to_concept_role_data(
+            data_point, names = mimir_to_tensors.transition_to_concept_role_data(
                 s,
                 a,
                 s2,
@@ -553,9 +620,10 @@ def generate_action_model_learning_dataset(
                 predicate_indices=predicate_indices,
                 padding=padding,
             )
+            concept_role_names=names
             
         else:
-            data_point = state_action_to_applicability_data(
+            data_point, names = state_action_to_applicability_data(
                 s,
                 a,
                 problem,
@@ -564,10 +632,11 @@ def generate_action_model_learning_dataset(
                 is_applicable=is_applicable,
                 padding=padding,
             )
+            concept_role_names=names
         dataset[action_name].append(data_point)  
       
     for a in napp.keys():
-        print(f"Action: {a}, Applicable: {app[a]}, Non-applicable: {napp[a]}")
+        log(f"Action: {a}, Applicable: {app[a]}, Non-applicable: {napp[a]}, Names: {concept_role_names}")
     return dataset
 
 def generate_action_model_from_multiple_problems(
@@ -606,6 +675,7 @@ def generate_action_model_from_multiple_problems(
     return _prune_empty_action_datasets(combined_dataset)
 
 def generate_optimal_general_policy_dataset(
+    args,
     domain_path,
     problem_path,
     parameter_indices=None,
@@ -614,31 +684,54 @@ def generate_optimal_general_policy_dataset(
     max_sampling_seconds_per_problem=None,
 ):
     problem = formalism.Problem.create(domain_path, problem_path, formalism.ParserOptions())
-    
-    out = optimal_general_policy_bfs(
-        problem,
-        max_states,
-        data_function= opt_gp_util.data_function,
-        max_sampling_seconds_per_problem=max_sampling_seconds_per_problem,
-    )
+    if not hasattr(args , "sampling_method"):
+        args.sampling_method = "bfs"
+    if args.sampling_method == "bfs":
+        out = optimal_general_policy_bfs(
+            problem,
+            max_states,
+            data_function= opt_gp_util.data_function,
+            max_sampling_seconds_per_problem=max_sampling_seconds_per_problem,
+        )
+    elif args.sampling_method == "opt_then_bfs":
+        out = optimal_general_policy_opt_then_bfs(
+            problem,
+            max_states,
+            data_function= opt_gp_util.data_function,
+            max_sampling_seconds_per_problem=max_sampling_seconds_per_problem,
+        )
+    log(f"Generation done")
+    log(f"Collected {sum(len(v) for v in out.values())} data points across {len(out)} actions.")
     dataset = {}
+    names = {}
     for action_name in out:
+        concept_role_names = None
         dataset[action_name] = []
         for data_point in out[action_name]:
-            dataset[action_name].append(opt_gp_util.to_tensor_data(data_point, problem, parameter_indices=parameter_indices, predicate_indices=predicate_indices))
-    return dataset
+            data, names = opt_gp_util.to_tensor_data(data_point, problem, parameter_indices=parameter_indices, predicate_indices=predicate_indices)
+            dataset[action_name].append(data)
+            if concept_role_names is None:
+                concept_role_names = names
+            elif names!= concept_role_names:
+                raise ValueError(f"Concept/role names mismatch across data points for action {action_name}: {names} vs {concept_role_names}")
+        log(f"{len(dataset[action_name])} data points for action {action_name} with names {concept_role_names}")
+        names[action_name] = concept_role_names
+    return dataset, names
 
 def generate_optimal_general_policy_dataset_from_multiple_problems(
+    args,
     domain_path,
     problem_paths,
     parameter_indices=None,
     predicate_indices=set(),
     max_states=1000,
     max_sampling_seconds_per_problem=None):
-    
+    names_list = []
     combined_dataset = {}
     for problem_path in problem_paths:
-        dataset = generate_optimal_general_policy_dataset(
+        log(f"Generating optimal general policy dataset for problem: {problem_path}, max_states: {max_states}, max_sampling_seconds_per_problem: {max_sampling_seconds_per_problem}")
+        dataset, names = generate_optimal_general_policy_dataset(
+            args,
             domain_path,
             problem_path,
             parameter_indices=parameter_indices,
@@ -646,11 +739,12 @@ def generate_optimal_general_policy_dataset_from_multiple_problems(
             max_states=max_states,
             max_sampling_seconds_per_problem=max_sampling_seconds_per_problem,
         )
+        names_list.append(names)
         for action_name in dataset:
             if action_name not in combined_dataset:
                 combined_dataset[action_name] = []
             combined_dataset[action_name].append(dataset[action_name])
-    return _prune_empty_action_datasets(combined_dataset)
+    return _prune_empty_action_datasets(combined_dataset), names_list
 
 
 def generate_general_policy_dataset(
@@ -660,97 +754,119 @@ def generate_general_policy_dataset(
     parameter_indices=None,
     predicate_indices=set(),
     max_states=100000,
-    state_space=None,
     max_sampling_seconds_per_problem=None,
-    check_optimality=False,
-    search_context=None,
+    exclude_goal_states=True,
+    precomputed_transitions=None,
+    problem_override=None,
 ):
-    problem = formalism.Problem.create(domain_path, problem_path, formalism.ParserOptions())
-    if state_space is not None:
-        vertices = state_space.get_graph().get_vertices()
-        first_vertex = next(iter(vertices), None)
-        if first_vertex is not None and hasattr(datasets, "get_problem"):
-            problem = datasets.get_problem(first_vertex)
+    problem = problem_override
+    if precomputed_transitions is None:
+        raise RuntimeError(
+            "generate_general_policy_dataset requires precomputed transitions from SearchContext sampling. "
+            "This guard prevents accidental full state-space generation paths."
+        )
+    if problem is None and len(precomputed_transitions) > 0:
+        first_state = precomputed_transitions[0][0]
+        if hasattr(first_state, "get_state_repository"):
+            state_repository = first_state.get_state_repository()
+            if hasattr(state_repository, "get_problem"):
+                problem = state_repository.get_problem()
+    if problem is None:
+        problem = formalism.Problem.create(domain_path, problem_path, formalism.ParserOptions())
     action_names = [a.get_name() for a in problem.get_domain().get_actions()]
     dataset = {action_name: [] for action_name in action_names}
+    log(f"Generating general policy dataset for problem: {problem_path}, max_states: {max_states}, max_sampling_seconds_per_problem: {max_sampling_seconds_per_problem}")
+    def _atom_signature(atom):
+        pred = atom.get_predicate().get_name()
+        objs = tuple(obj.get_index() for obj in atom.get_objects())
+        return (pred, objs)
 
-    if check_optimality and search_context is None:
-        ctx_opts = search.SearchContextOptions(search.LiftedOptions())
-        search_context = search.SearchContext.create(problem, ctx_opts)
+    def _state_satisfies_goal_condition(s, problem_obj):
+        repos = problem_obj.get_repositories()
+        if hasattr(s, "get_atoms"):
+            state_atoms = s.get_atoms(ignore_static=False, ignore_fluent=False, ignore_derived=True)
+        elif hasattr(s, "get_fluent_atoms"):
+            fluent_indices = list(s.get_fluent_atoms())
+            state_atoms = list(repos.get_fluent_ground_atoms_from_indices(fluent_indices)) + list(problem_obj.get_static_initial_atoms())
+        else:
+            raise TypeError("Unsupported state object: expected get_atoms or get_fluent_atoms")
 
-    def _is_optimal(s, a, search_ctx):
-        all_actions_for_state = [act for act in search_ctx.get_applicable_action_generator().get_applicable_actions(s)]
-        optimal_actions, _ = opt_gp_util.identify_optimal_actions(s, problem, all_actions_for_state, search_ctx)
-        return a in optimal_actions
+        state_atom_signatures = {_atom_signature(atom) for atom in state_atoms}
+        goal_condition = problem_obj.get_goal_condition()
 
-    if state_space is None:
-        transitions = generate_action_transitions_bfs(
+        try:
+            pos_static = list(goal_condition.get_static_positive_condition())
+            pos_fluent = list(goal_condition.get_fluent_positive_condition())
+            neg_static = list(goal_condition.get_static_negative_condition())
+            neg_fluent = list(goal_condition.get_fluent_negative_condition())
+
+            for atom in repos.get_static_ground_atoms_from_indices(pos_static):
+                if _atom_signature(atom) not in state_atom_signatures:
+                    return False
+            for atom in repos.get_fluent_ground_atoms_from_indices(pos_fluent):
+                if _atom_signature(atom) not in state_atom_signatures:
+                    return False
+            for atom in repos.get_static_ground_atoms_from_indices(neg_static):
+                if _atom_signature(atom) in state_atom_signatures:
+                    return False
+            for atom in repos.get_fluent_ground_atoms_from_indices(neg_fluent):
+                if _atom_signature(atom) in state_atom_signatures:
+                    return False
+            return True
+        except AttributeError:
+            for literal in goal_condition.get_literals(ignore_derived=True):
+                atom_sig = _atom_signature(literal.get_atom())
+                if literal.get_polarity() and atom_sig not in state_atom_signatures:
+                    return False
+                if (not literal.get_polarity()) and atom_sig in state_atom_signatures:
+                    return False
+            return True
+
+    def _is_goal_state(s):
+        return _state_satisfies_goal_condition(s, problem)
+    transitions = precomputed_transitions
+    log("Using precomputed transitions from SearchContext sampling")
+    log(f"Generated {len(transitions)} transitions, processing into dataset...")
+
+    following_transitions = 0
+    skipped_goal_transitions = 0
+    positive_labels_per_action = {action_name: 0 for action_name in action_names}
+    evaluated_labels_per_action = {action_name: 0 for action_name in action_names}
+    for s, a, s2, _ in transitions:
+        if exclude_goal_states and _is_goal_state(s):
+            skipped_goal_transitions += 1
+            continue
+
+        action_name = a.get_action().get_name()
+        evaluated_labels_per_action[action_name] += 1
+        label = True if filter_function is None else filter_function(s, s2)
+        if label:
+            following_transitions += 1
+            positive_labels_per_action[action_name] += 1
+
+        parameter_indices_for_action = parameter_indices[action_name] if parameter_indices is not None else None
+        data_point = state_pair_to_concept_role_data(
+            s,
+            s2,
             problem,
-            max_states=max_states,
-            include_non_applicable=False,
-            parameter_indices=parameter_indices,
+            parameter_indices=parameter_indices_for_action,
+            label=label,
             predicate_indices=predicate_indices,
-            max_sampling_seconds_per_problem=max_sampling_seconds_per_problem,
+            padding=0,
         )
-        print(f"Generated {len(transitions)} transitions, processing into dataset...")
-        sum_good=0
-        for s, a, s2, _ in transitions:
-            action_name = a.get_action().get_name()
-            if check_optimality:
-                label = _is_optimal(s, a, search_context)
-            else:
-                label = True if filter_function is None else filter_function(s, s2)
-            if label:
-                sum_good+=1
-            parameter_indices_for_action = parameter_indices[action_name] if parameter_indices is not None else None
-            data_point = state_pair_to_concept_role_data(
-                s,
-                s2,
-                problem,
-                parameter_indices=parameter_indices_for_action,
-                label=label,
-                predicate_indices=predicate_indices,
-                padding=0,
-            )
-            dataset[action_name].append(data_point)
-        print(f"Total transitions: {len(transitions)}, Transitions following policy: {sum_good}")
-        return dataset
+        dataset[action_name].append(data_point)
 
-    sampler = datasets.StateSpaceSampler(state_space)
-    transitions_count = 0
-    processed_states = 0
-    following_states = 0
-    for vertex in state_space.get_graph().get_vertices():
-        if processed_states >= max_states:
-            break
-        s = datasets.get_state(vertex)
-        for a, s2 in sampler.get_forward_transitions(s):
-            action_name = a.get_action().get_name()
-            if check_optimality:
-                label = _is_optimal(s, a, search_context)
-            else:
-                label = True if filter_function is None else filter_function(s, s2)
-            if label:
-                following_states += 1
-            if parameter_indices is None:
-                parameter_indices_for_action = None
-            else:
-                parameter_indices_for_action = parameter_indices[action_name]
-            data_point = state_pair_to_concept_role_data(
-                s,
-                s2,
-                problem,
-                parameter_indices=parameter_indices_for_action,
-                label=label,
-                predicate_indices=predicate_indices,
-                padding=0,
-            )
-            dataset[action_name].append(data_point)
-            transitions_count += 1
-        processed_states += 1
-
-    print(f"Generated {transitions_count} transitions, processing into dataset...")
-    print(f"Transitions following policy: {following_states}")
+    log(
+        f"Total transitions: {len(transitions)}, "
+        f"Transitions following policy/optimality: {following_transitions}, "
+        f"Skipped from goal states: {skipped_goal_transitions}"
+    )
+    log("Label=1 transitions per action:")
+    for action_name in action_names:
+        evaluated = evaluated_labels_per_action[action_name]
+        positive = positive_labels_per_action[action_name]
+        ratio = (positive / evaluated) if evaluated > 0 else 0.0
+        log(f"  {action_name}: {positive} / {evaluated} ({ratio:.2%})")
     return dataset
 
 def create_general_policy_for_multiple_problems(
@@ -759,33 +875,296 @@ def create_general_policy_for_multiple_problems(
     parameter_indices,
     domain_name,
     max_states=100000,
-    check_optimality=False):
-    if check_optimality:
-        filter_function = None
-        runtime = None
-        print("Using optimality-based labeling (ignoring loaded policy).")
-    else:
-        runtime = gps.create_runtime(domain=domain_path, problems=problem_paths, domain_name=domain_name)
-        filter_function = lambda s, s2: gps.transition_follows_policy(runtime.policy, s, s2, runtime.denotation_repos)
-
+    max_sampling_seconds_per_problem=None,
+):
     combined_dataset = {}
-    for i, problem_path in enumerate(problem_paths):
+    for problem_path in problem_paths:
+        runtime = gps.create_runtime(
+            domain=domain_path,
+            problems=[problem_path],
+            domain_name=domain_name,
+        )
+        filter_function = lambda s, s2: gps.transition_follows_policy(runtime.policy, s, s2, runtime.denotation_repos)
+        log("filter function created")
+        search_context = runtime.ctx.get_search_contexts()[0]
+        aag = search_context.get_applicable_action_generator()
+        state_repo = search_context.get_state_repository()
+        init, _ = state_repo.get_or_create_initial_state()
+        q = deque([init])
+        seen = {init}
+        transitions = []
+        expanded_states = 0
+        sampling_start_time = time.time()
+        while q and expanded_states < max_states:
+            if (
+                max_sampling_seconds_per_problem is not None
+                and max_sampling_seconds_per_problem > 0
+                and (time.time() - sampling_start_time) >= max_sampling_seconds_per_problem
+            ):
+                log(
+                    f"Stopping SearchContext sampling early after {max_sampling_seconds_per_problem}s "
+                    f"(expanded states: {expanded_states}, transitions: {len(transitions)})."
+                )
+                break
+
+            s = q.popleft()
+            actions = aag.generate_applicable_actions(s)
+            for a in actions:
+                s2, _ = state_repo.get_or_create_successor_state(s, a, 0.0)
+                transitions.append((s, a, s2, True))
+                if s2 not in seen:
+                    seen.add(s2)
+                    q.append(s2)
+            expanded_states += 1
+        log(f"Generating dataset for problem: {problem_path}")
         dataset = generate_general_policy_dataset(
             domain_path,
             problem_path,
             filter_function=filter_function,
             parameter_indices=parameter_indices,
             max_states=max_states,
-            state_space=gps.get_problem_state_space(runtime, i) if runtime is not None else None,
-            check_optimality=check_optimality,
+            max_sampling_seconds_per_problem=max_sampling_seconds_per_problem,
+            precomputed_transitions=transitions,
+            problem_override=search_context.get_problem(),
         )
-        
+        log(f"Dataset generated for problem: {problem_path}, combining into overall dataset...")
         for action_name, data_points in dataset.items():
             if action_name not in combined_dataset:
                 combined_dataset[action_name] = []
             combined_dataset[action_name].append(data_points)
     return _prune_empty_action_datasets(combined_dataset)
     
+
+def test_model_on_test_problems(domain_path, test_instance_paths, models_per_action, parameter_indices, max_steps, soft_policy=False, model_type="state_pair", threshold=0.5, one_step_cycle_check=True):
+    results = {}
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    prepared_models = {}
+    for name, model in models_per_action.items():
+        model = model.to(device)
+        model.eval()
+        prepared_models[name] = model
+
+    for test_instance_path in test_instance_paths:
+        problem = formalism.Problem.create(domain_path, test_instance_path, formalism.ParserOptions())
+        ctx_opts = search.SearchContextOptions(search.LiftedOptions(search.LiftedKPKCOptions()))
+        search_context = search.SearchContext.create(problem, ctx_opts)
+        # Get initial state
+        state_repo = search_context.get_state_repository()
+
+        aag = search.KPKCLiftedApplicableActionGenerator.create(problem, search.LiftedKPKCOptions())
+        # state_repo = search.StateRepository.create(axiom_eval)
+        init, _ = state_repo.get_or_create_initial_state()
+        # opt_dist = opt_gp_util.goal_distance(init, problem, search_context)
+        # log(f"Optimal distance to goal for problem {test_instance_path}: {opt_dist}")
+        # continue
+        opt_dist = 0
+        
+        # ctx_opts = search.SearchContextOptions(search.LiftedOptions(search.LiftedKPKCOptions()))
+        # search_context = search.SearchContext.create(problem, ctx_opts)
+        # aag = search_context.get_applicable_action_generator()
+        # state_repo = search_context.get_state_repository()
+        # init, _ = state_repo.get_or_create_initial_state()
+        current_state = init
+        steps_taken = 0
+        goal_reached = False
+        log(f"Testing on problem: {str(test_instance_path).split('/')[-1]} with max_steps: {max_steps}")
+        seen = set()
+        seen.add(current_state)
+        res="max_steps"
+        def _atom_signature(atom):
+            pred = atom.get_predicate().get_name()
+            objs = tuple(obj.get_index() for obj in atom.get_objects())
+            return (pred, objs)
+
+        def _state_satisfies_goal_condition(s, problem_obj):
+            repos = problem_obj.get_repositories()
+            if hasattr(s, "get_atoms"):
+                state_atoms = s.get_atoms(ignore_static=False, ignore_fluent=False, ignore_derived=True)
+            elif hasattr(s, "get_fluent_atoms"):
+                fluent_indices = list(s.get_fluent_atoms())
+                state_atoms = list(repos.get_fluent_ground_atoms_from_indices(fluent_indices)) + list(problem_obj.get_static_initial_atoms())
+            else:
+                raise TypeError("Unsupported state object: expected get_atoms or get_fluent_atoms")
+
+            state_atom_signatures = {_atom_signature(atom) for atom in state_atoms}
+            goal_condition = problem_obj.get_goal_condition()
+
+            try:
+                pos_static = list(goal_condition.get_static_positive_condition())
+                pos_fluent = list(goal_condition.get_fluent_positive_condition())
+                neg_static = list(goal_condition.get_static_negative_condition())
+                neg_fluent = list(goal_condition.get_fluent_negative_condition())
+
+                for atom in repos.get_static_ground_atoms_from_indices(pos_static):
+                    if _atom_signature(atom) not in state_atom_signatures:
+                        return False
+                for atom in repos.get_fluent_ground_atoms_from_indices(pos_fluent):
+                    if _atom_signature(atom) not in state_atom_signatures:
+                        return False
+                for atom in repos.get_static_ground_atoms_from_indices(neg_static):
+                    if _atom_signature(atom) in state_atom_signatures:
+                        return False
+                for atom in repos.get_fluent_ground_atoms_from_indices(neg_fluent):
+                    if _atom_signature(atom) in state_atom_signatures:
+                        return False
+                return True
+            except AttributeError:
+                for literal in goal_condition.get_literals(ignore_derived=True):
+                    atom_sig = _atom_signature(literal.get_atom())
+                    if literal.get_polarity() and atom_sig not in state_atom_signatures:
+                        return False
+                    if (not literal.get_polarity()) and atom_sig in state_atom_signatures:
+                        return False
+                return True
+
+        def _is_goal_state(s):
+            return _state_satisfies_goal_condition(s, problem)
+        if _is_goal_state(current_state):
+            log("Initial state is already a goal state.")
+            results[test_instance_path] = {
+                "final_state": current_state,
+                "steps_taken": steps_taken,
+                "goal_reached": True,
+                "reason": "initial_goal",
+                "optimal_steps": opt_dist
+            }
+            continue
+        if _is_goal_state(init):
+            log("Initial state is already a goal state.")
+            results[test_instance_path] = {
+                "final_state": init,
+                "steps_taken": steps_taken,
+                "goal_reached": True,
+                "reason": "initial_goal",
+                "optimal_steps": opt_dist
+            }
+            continue
+        while steps_taken < max_steps:
+            actions = aag.generate_applicable_actions(current_state)
+            if not actions:
+                log("No applicable actions available, stopping execution.")
+                break
+            action_scores = {}
+            # for a in actions:
+            #     if a.get_action().get_name() =="pick":
+            #         for i, obj in enumerate(a.get_objects()):
+            #             print(f"Object: {obj.get_name()}, Index: {obj.get_index()}, Position in action: {i}")
+            preds_per_action_name = {}
+            with torch.inference_mode():
+                for name in prepared_models:
+                    if model_type == "state_pair_nullary" or model_type == "state_full":
+                        concepts, roles, _, _ = mimir_to_tensors.state_goal_to_concept_role_data(
+                            current_state,
+                            problem,
+                            name,
+                            parameter_indices=parameter_indices,
+                        )
+                    if model_type == "state_action_nullary" or model_type == "state_action_full":
+                        concepts, roles, _, _ = mimir_to_tensors.state_goal_to_concept_role_data(
+                            current_state,
+                            problem,
+                            name,
+                            parameter_indices=parameter_indices,
+                        )
+                    num_object_slots = concepts.shape[-1]
+                    model = prepared_models[name]
+                    concepts = concepts.to(device, non_blocking=True)
+                    roles = roles.to(device, non_blocking=True)
+                    out_concepts, out_roles = model(concepts, roles)
+                    preds_per_action_name[name] = (
+                        out_concepts.detach().cpu(),
+                        out_roles.detach().cpu(),
+                        num_object_slots,
+                    )
+            for a in actions:
+                # s2 = state_repo.get_or_create_successor_state(current_state, a, 0.0)[0]
+                action_name = a.get_action().get_name()
+                practical_action_arity = len(a.get_objects()) if parameter_indices is None or parameter_indices[action_name] is None else len(parameter_indices[action_name])
+                parameter_indices_action = parameter_indices[action_name] if parameter_indices is not None and parameter_indices[action_name] is not None else list(range(practical_action_arity))
+                action_object_indices = tuple(obj.get_index() for obj in a.get_objects())
+                out_concepts, out_roles, num_object_slots = preds_per_action_name[action_name]
+                if model_type == "state_pair_nullary" or model_type == "state_action_nullary":
+                    action_scores[a] = out_concepts.sum().item()  # Example scoring function
+                elif model_type == "state_full" or model_type == "state_action_full":
+                    if practical_action_arity == 0:
+                        action_scores[a] = out_concepts.sum().item() / num_object_slots
+                    if practical_action_arity == 1:
+                        action_scores[a] = out_concepts[0, 0, action_object_indices[parameter_indices_action[0]]].item()
+                    elif practical_action_arity == 2:
+                        action_scores[a] = out_roles[0, 0,  action_object_indices[parameter_indices_action[0]], action_object_indices[parameter_indices_action[1]]].item()
+            all_scores = action_scores.copy()
+            if threshold is not None:
+                action_scores = {a: score for a, score in action_scores.items() if score >= threshold}
+            if not action_scores:
+                max_score = max(all_scores.values(), default=float('-inf'))
+                log(f"No valid actions available with score above threshold, stopping execution. Max score is {max_score}.")
+                res = "no-action"
+                goal_reached = False
+                break
+            if soft_policy:
+                action_names = list(action_scores.keys())
+                chosen_action = np.random.choice(action_names)
+                chosen_score = action_scores[chosen_action]
+                chosen_successor, _ = state_repo.get_or_create_successor_state(current_state, chosen_action, 0.0)
+                if one_step_cycle_check and chosen_successor in seen:
+                    log("Sampled action leads to a previously seen state, stopping execution to avoid loops.")
+                    res = "cycle"
+                    goal_reached = False
+                    break
+            else:
+                ranked_actions = sorted(action_scores.items(), key=lambda item: item[1], reverse=True)
+                chosen_action = None
+                chosen_score = None
+                chosen_successor = None
+
+                if one_step_cycle_check:
+                    for candidate_action, candidate_score in ranked_actions:
+                        successor_state, _ = state_repo.get_or_create_successor_state(current_state, candidate_action, 0.0)
+                        if successor_state not in seen:
+                            chosen_action = candidate_action
+                            chosen_score = candidate_score
+                            chosen_successor = successor_state
+                            break
+                        log(f"Action {candidate_action.get_action().get_name()} leads to a previously seen state, skipping.")
+
+                    if chosen_action is None:
+                        log("All valid actions lead to previously seen states, stopping execution to avoid a cycle.")
+                        res = "cycle"
+                        goal_reached = False
+                        break
+                else:
+                    chosen_action, chosen_score = ranked_actions[0]
+                    chosen_successor, _ = state_repo.get_or_create_successor_state(current_state, chosen_action, 0.0)
+                    if chosen_successor in seen:
+                        log("Encountered a previously seen state, stopping execution to avoid loops.")
+                        res= "cycle"
+                        goal_reached = False
+                        break
+
+            log(
+                f"Chosen action: {chosen_action.get_action().get_name()}, "
+                f"Num valid Actions:{len(action_scores):.2f}, Score: {chosen_score}"
+            )
+            current_state = chosen_successor
+            seen.add(current_state)
+            steps_taken += 1
+            # Check if goal is reached
+                
+            goal_reached = _is_goal_state(current_state)
+            if goal_reached:
+                res="success"
+                break
+        results[test_instance_path] = {
+            "final_state": current_state,
+            "steps_taken": steps_taken,
+            "goal_reached": goal_reached,
+            "reason": res,
+            "optimal_steps": opt_dist
+        }
+        log(f"Finished testing on problem: {str(test_instance_path).split('/')[-1]}, Steps taken: {steps_taken}, Goal reached: {goal_reached}, Reason: {res}")
+    return results
+
+
 if __name__ == "__main__":
     import sys
 

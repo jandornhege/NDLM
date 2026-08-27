@@ -1,0 +1,34 @@
+1784805613
+[2026-07-23 18:40:18]    file: /work/rleap1/jan.dornhege/NDLM/src/data/logistics_4_actions_single_goal/train/logistics-2 copy 2.pddl, steps_taken: 2, success: False, optimal_steps: 0
+[2026-07-23 18:40:18]    file: /work/rleap1/jan.dornhege/NDLM/src/data/logistics_4_actions_single_goal/train/logistics-2 copy 3.pddl, steps_taken: 8, success: False, optimal_steps: 0
+[2026-07-23 18:40:18]    file: /work/rleap1/jan.dornhege/NDLM/src/data/logistics_4_actions_single_goal/train/logistics-2 copy 4.pddl, steps_taken: 4, success: False, optimal_steps: 0
+[2026-07-23 18:40:18]    file: /work/rleap1/jan.dornhege/NDLM/src/data/logistics_4_actions_single_goal/train/logistics-2 copy.pddl, steps_taken: 10, success: True, optimal_steps: 0
+[2026-07-23 18:40:18]    file: /work/rleap1/jan.dornhege/NDLM/src/data/logistics_4_actions_single_goal/train/logistics-2.pddl, steps_taken: 2, success:False, optimal_steps: 0
+[2026-07-23 18:40:18]    file: /work/rleap1/jan.dornhege/NDLM/src/data/logistics_4_actions_single_goal/train/logistics_2_2_2_2_2_2.pddl, steps_taken: 10, success: True, optimal_steps: 0
+[2026-07-23 18:40:18]    file: /work/rleap1/jan.dornhege/NDLM/src/data/logistics_4_actions_single_goal/train/logistics_3_3_3_3_3_3.pddl, steps_taken: 10, success: True, optimal_steps: 0
+[2026-07-23 18:40:18]    file: /work/rleap1/jan.dornhege/NDLM/src/data/logistics_4_actions_single_goal/test/logistics-t1 copy.pddl, steps_taken: 0, success: False, optimal_steps: 0
+[2026-07-23 18:40:18]    file: /work/rleap1/jan.dornhege/NDLM/src/data/logistics_4_actions_single_goal/test/logistics-t2.pddl, steps_taken: 4, success:False, optimal_steps: 0
+[2026-07-23 18:40:18]    file: /work/rleap1/jan.dornhege/NDLM/src/data/logistics_4_actions_single_goal/test/logistics-t1 copy 2.pddl, steps_taken: 7, success: False, optimal_steps: 0
+[2026-07-23 18:40:18]    file: /work/rleap1/jan.dornhege/NDLM/src/data/logistics_4_actions_single_goal/test/logistics-t1 copy 3.pddl, steps_taken: 4, success: False, optimal_steps: 0
+[2026-07-23 18:40:18]    file: /work/rleap1/jan.dornhege/NDLM/src/data/logistics_4_actions_single_goal/test/logistics-t1 copy 4.pddl, steps_taken: 10, success: False, optimal_steps: 0
+[2026-07-23 18:40:18]    file: /work/rleap1/jan.dornhege/NDLM/src/data/logistics_4_actions_single_goal/test/logistics-t1 copy 5.pddl, steps_taken: 7, success: False, optimal_steps: 0
+[2026-07-23 18:40:18]    file: /work/rleap1/jan.dornhege/NDLM/src/data/logistics_4_actions_single_goal/test/logistics-t1 copy 6.pddl, steps_taken: 3, success: True, optimal_steps: 0
+[2026-07-23 18:40:18]    file: /work/rleap1/jan.dornhege/NDLM/src/data/logistics_4_actions_single_goal/test/logistics-t1 copy 7.pddl, steps_taken: 15, success: True, optimal_steps: 0
+[2026-07-23 18:40:18]    file: /work/rleap1/jan.dornhege/NDLM/src/data/logistics_4_actions_single_goal/test/logistics-t2 copy.pddl, steps_taken: 7, success: True, optimal_steps: 0
+[2026-07-23 18:40:18]    file: /work/rleap1/jan.dornhege/NDLM/src/data/logistics_4_actions_single_goal/test/logistics-t2 copy 2.pddl, steps_taken: 5, success: True, optimal_steps: 0
+[2026-07-23 18:40:18]    file: /work/rleap1/jan.dornhege/NDLM/src/data/logistics_4_actions_single_goal/test/logistics-t2 copy 3.pddl, steps_taken: 8, success: False, optimal_steps: 0
+[2026-07-23 18:40:18]    file: /work/rleap1/jan.dornhege/NDLM/src/data/logistics_4_actions_single_goal/test/logistics-t2 copy 4.pddl, steps_taken: 4, success: True, optimal_steps: 0
+[2026-07-23 18:40:18]    file: /work/rleap1/jan.dornhege/NDLM/src/data/logistics_4_actions_single_goal/test/logistics-t2 copy 5.pddl, steps_taken: 4, success: True, optimal_steps: 0
+[2026-07-23 18:40:18]    file: /work/rleap1/jan.dornhege/NDLM/src/data/logistics_4_actions_single_goal/test/logistics-t2 copy 6.pddl, steps_taken: 11, success: False, optimal_steps: 0
+[2026-07-23 18:40:18]    file: /work/rleap1/jan.dornhege/NDLM/src/data/logistics_4_actions_single_goal/test/logistics-t2 copy 7.pddl, steps_taken: 5, success: True, optimal_steps: 0
+[2026-07-23 18:40:18]    file: /work/rleap1/jan.dornhege/NDLM/src/data/logistics_4_actions_single_goal/test/logistics-t2 copy 8.pddl, steps_taken: 3, success: False, optimal_steps: 0
+[2026-07-23 18:40:18]    file: /work/rleap1/jan.dornhege/NDLM/src/data/logistics_4_actions_single_goal/test/logistics-t2 copy 9.pddl, steps_taken: 9, success: False, optimal_steps: 0
+[2026-07-23 18:40:18]    file: /work/rleap1/jan.dornhege/NDLM/src/data/logistics_4_actions_single_goal/test/logistics-t2 copy 10.pddl, steps_taken: 1, success: False, optimal_steps: 0
+[2026-07-23 18:40:18]    file: /work/rleap1/jan.dornhege/NDLM/src/data/logistics_4_actions_single_goal/test/logistics-t2 copy 11.pddl, steps_taken: 12,success: False, optimal_steps: 0
+[2026-07-23 18:40:18]    file: /work/rleap1/jan.dornhege/NDLM/src/data/logistics_4_actions_single_goal/test/logistics-t2 copy 12.pddl, steps_taken: 1, success: False, optimal_steps: 0
+
+1784805619
+
+1784810078
+
+1784806814

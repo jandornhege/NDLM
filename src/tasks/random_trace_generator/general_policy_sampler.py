@@ -2,10 +2,8 @@ from pathlib import Path
 from dataclasses import dataclass
 
 import pymimir.advanced.search as search
-import pymimir.advanced.datasets as datasets
 import pymimir.advanced.languages.description_logics as dl
 import pymimir.advanced.languages.general_policies as gp
-
 
 @dataclass
 class GeneralPolicyRuntime:
@@ -16,7 +14,6 @@ class GeneralPolicyRuntime:
     gp_repos: object
     dl_repos: object
     denotation_repos: object
-    kb: object
 
 
 def create_delivery_runtime(
@@ -26,8 +23,6 @@ def create_delivery_runtime(
     gp_repos=None,
     dl_repos=None,
     denotation_repos=None,
-    kb=None,
-    kb_options=None,
 ):
     if ctx is None:
         if domain is None or problems is None:
@@ -53,12 +48,6 @@ def create_delivery_runtime(
         dl_repos,
     )
 
-    if kb is None:
-        if kb_options is None:
-            kb_options = datasets.KnowledgeBaseOptions()
-            kb_options.state_space_options.symmetry_pruning = False
-        kb = datasets.KnowledgeBase.create(ctx, kb_options)
-
     return GeneralPolicyRuntime(
         domain=domain,
         problems=problems,
@@ -67,7 +56,6 @@ def create_delivery_runtime(
         gp_repos=gp_repos,
         dl_repos=dl_repos,
         denotation_repos=denotation_repos,
-        kb=kb,
     )
 
 def create_runtime(
@@ -78,8 +66,6 @@ def create_runtime(
     gp_repos=None,
     dl_repos=None,
     denotation_repos=None,
-    kb=None,
-    kb_options=None,
 ):
     if ctx is None:
         if domain is None or problems is None:
@@ -94,49 +80,58 @@ def create_runtime(
     else:
         domain = Path(domain) if domain is not None else Path(".")
         problems = [Path(problem) for problem in problems] if problems is not None else []
-
     gp_repos = gp_repos if gp_repos is not None else gp.Repositories()
     dl_repos = dl_repos if dl_repos is not None else dl.Repositories()
     denotation_repos = denotation_repos if denotation_repos is not None else dl.DenotationRepositories()
+    domain_obj = ctx.get_generalized_problem().get_domain()
     if domain_name == "delivery":
         policy = gp.GeneralPolicyFactory.get_or_create_general_policy_delivery(
-            ctx.get_generalized_problem().get_domain(),
+            domain_obj,
             gp_repos,
             dl_repos,
         )
     elif domain_name == "logistics":
         policy = gp.GeneralPolicyFactory.get_or_create_general_policy_logistics(
-            ctx.get_generalized_problem().get_domain(),
+            domain_obj,
             gp_repos,
             dl_repos,
         )
-    elif domain_name == "blocks3ops":
+    elif domain_name in ["blocks3ops", "blocksworld"]:
+        print("Creating general policy for blocks3ops domain")
         policy = gp.GeneralPolicyFactory.get_or_create_general_policy_blocks3ops(
-            ctx.get_generalized_problem().get_domain(),
+            domain_obj,
             gp_repos,
             dl_repos,
         )
+        print("General policy created for blocks3ops domain")
     elif domain_name == "spanner":
         policy = gp.GeneralPolicyFactory.get_or_create_general_policy_spanner(
-            ctx.get_generalized_problem().get_domain(),
+            domain_obj,
             gp_repos,
             dl_repos,
         )
     elif domain_name == "miconic":
-        policy = gp.GeneralPolicyFactory.get_or_create_general_policy_miconic(
-            ctx.get_generalized_problem().get_domain(),
-            gp_repos,
+        try:
+            from random_trace_generator.custom_policies import MICONIC_POLICY_DESCRIPTION
+        except ImportError:
+            from custom_policies import MICONIC_POLICY_DESCRIPTION   
+        policy = gp_repos.get_or_create_general_policy(
+            MICONIC_POLICY_DESCRIPTION,
+            domain_obj,
+            dl_repos,
+        )
+    elif domain_name == "ferry":
+        try:
+            from random_trace_generator.custom_policies import FERRY_POLICY_DESCRIPTION
+        except ImportError:
+            from custom_policies import FERRY_POLICY_DESCRIPTION
+        policy = gp_repos.get_or_create_general_policy(
+            FERRY_POLICY_DESCRIPTION,
+            domain_obj,
             dl_repos,
         )
     else:
         raise ValueError(f"Unsupported domain name: {domain_name}")
-
-    if kb is None:
-        if kb_options is None:
-            kb_options = datasets.KnowledgeBaseOptions()
-            kb_options.state_space_options.symmetry_pruning = False
-        kb = datasets.KnowledgeBase.create(ctx, kb_options)
-
     return GeneralPolicyRuntime(
         domain=domain,
         problems=problems,
@@ -145,17 +140,17 @@ def create_runtime(
         gp_repos=gp_repos,
         dl_repos=dl_repos,
         denotation_repos=denotation_repos,
-        kb=kb,
     )
 
 
 def create_delivery_setup(domain, problems):
     runtime = create_delivery_runtime(domain=domain, problems=problems)
-    return runtime.policy, runtime.gp_repos, runtime.denotation_repos, runtime.kb
+    return runtime.policy, runtime.gp_repos, runtime.denotation_repos
 
 
 def get_problem_state_space(runtime, problem_index):
-    return runtime.kb.get_state_spaces()[problem_index]
+    del runtime, problem_index
+    raise RuntimeError("State-space access via runtime has been removed. Use BFS transition sampling paths instead.")
 
 
 def transition_follows_policy(policy, source_state, target_state, denotation_repos):

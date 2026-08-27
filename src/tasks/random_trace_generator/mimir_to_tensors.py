@@ -3,6 +3,7 @@ import pymimir.advanced.formalism as formalism
 import pymimir.advanced.search as search
 import pymimir.advanced.datasets as datasets
 
+
 def mimir_state_to_concept_role_data(state, problem, only_fluid=False, padding=0, predicate_indices=set()):
     out_roles = []
     out_concepts = []
@@ -31,6 +32,7 @@ def mimir_state_to_concept_role_data(state, problem, only_fluid=False, padding=0
             raise ValueError(f"Predicate {p.get_name()} has arity > 2, which is not supported")
         else:
             raise ValueError(f"Predicate {p.get_name()} has unsupported arity {p.get_arity()}")
+
     repositories = problem.get_repositories()
     if hasattr(state, "get_atoms"):
         atoms = state.get_atoms(ignore_static=only_fluid, ignore_fluent=False, ignore_derived=True)
@@ -48,7 +50,7 @@ def mimir_state_to_concept_role_data(state, problem, only_fluid=False, padding=0
     #initialize empty tensors
     concepts_tensor = torch.zeros((len(concept_p), num_objects+padding), dtype=torch.float32)
     roles_tensor = torch.zeros((len(role_p), num_objects+padding, num_objects+padding), dtype=torch.float32)
-
+    
     #fill with 1s where atoms are true in the state
     for atom in atoms:
         p = atom.get_predicate()
@@ -60,7 +62,8 @@ def mimir_state_to_concept_role_data(state, problem, only_fluid=False, padding=0
                 concepts_tensor[concept_p.index(p.get_name()), atom.get_objects()[0].get_index()] = 1.0
         elif p.get_name() in role_p:
             roles_tensor[role_p.index(p.get_name()), atom.get_objects()[0].get_index(), atom.get_objects()[1].get_index()] = 1.0
-    
+    # for i in range(num_objects):
+    #     roles_tensor[-1, i, i] = 1.0  # add identity-role
     return concepts_tensor, roles_tensor, concept_p, role_p
 
 
@@ -82,7 +85,7 @@ def goal_condition_to_concept_role_data(problem, padding=0, predicate_indices=se
                 role_p.append(p.get_name())
         else:
             raise ValueError(f"Predicate {p.get_name()} has unsupported arity (0 or >2)")
-
+   
     num_objects = len(problem.get_objects())
     concepts_tensor = torch.zeros((len(concept_p), num_objects + padding), dtype=torch.float32)
     roles_tensor = torch.zeros((len(role_p), num_objects + padding, num_objects + padding), dtype=torch.float32)
@@ -150,7 +153,6 @@ def transition_to_concept_role_data(s, a, s2, problem, parameter_indices, predic
     c, r, c_n, r_n = mimir_state_to_concept_role_data(s, problem, padding=padding, predicate_indices=predicate_indices)
     c2, r2, c2_n, r2_n = mimir_state_to_concept_role_data(s2, problem, only_fluid=True, padding=padding, predicate_indices=predicate_indices)
     a_c, a_c_n = action_parameters_to_concept_role_data(a, problem, parameter_indices, padding=padding)
-    
     #make targest to be only the difference(normalized to be 0 for removed and 1 for added concepts/roles)
     
     in_c = torch.cat([c, a_c], dim=0)
@@ -173,7 +175,12 @@ def transition_to_concept_role_data(s, a, s2, problem, parameter_indices, predic
     out_r2 = torch.clamp(out_r, max=0)*(-1)
     out_r = torch.cat([out_r1, out_r2], dim=0)
 
-    return (in_c, in_r,out_c, out_r), (c_n, r_n, a_c_n, c2_n, r2_n)
+    # print(f"in_concept_names: {c_n}, in_role_names: {r_n}", flush=True)
+    # print(f"out_concept_names: {c2_n}, out_role_names: {r2_n}", flush=True)
+    # print(f"parameter_shape: {a_c.shape}", flush=True)
+    out_c_names = [f"{name}_add" for name in c2_n] + [f"{name}_del" for name in c2_n] 
+    out_r_names = [f"{name}_add" for name in r2_n] + [f"{name}_del" for name in r2_n] 
+    return (in_c, in_r,out_c, out_r), (c_n, r_n, a_c_n, out_c_names, out_r_names)
 
 
 def state_action_to_applicability_data(s, a, problem, parameter_indices, is_applicable, padding=0, predicate_indices=set()):
@@ -197,17 +204,39 @@ def state_pair_to_concept_role_data(s, s2, problem, parameter_indices, label,  p
     out_roles = torch.zeros((0, num_objects+padding, num_objects+padding), dtype=torch.float32)  # no role is predicted
     return (in_c, in_r, out_concepts, out_roles)
 
+def state_action_goal_to_concept_role_data(s, a, problem, parameter_indices, label,  predicate_indices=set(), padding=0):
+    c, r, c_n, r_n = mimir_state_to_concept_role_data(s, problem, padding=padding, predicate_indices=predicate_indices)
+    a_c, a_c_n = action_parameters_to_concept_role_data(a, problem, parameter_indices, padding=padding)
+    goal_c, goal_r, _, _ = goal_condition_to_concept_role_data(problem, padding=padding, predicate_indices=predicate_indices)
+    in_c = torch.cat([c, a_c, goal_c], dim=0)
+    in_r = torch.cat([r, goal_r], dim=0)
+    num_objects = len(problem.get_objects())
+    out_concepts = torch.ones((1,num_objects+padding), dtype=torch.float32) if label else torch.zeros((1,num_objects+padding), dtype=torch.float32)
+    out_roles = torch.zeros((0, num_objects+padding, num_objects+padding), dtype=torch.float32)  # no role is predicted
+    return (in_c, in_r, out_concepts, out_roles)
+
+def state_goal_to_concept_role_data(s, problem, action_name, predicate_indices=set(), parameter_indices=None, padding=0):
+    c, r, c_n, r_n = mimir_state_to_concept_role_data(s, problem, padding=padding, predicate_indices=predicate_indices)
+    goal_c, goal_r, g_c_n, g_r_c = goal_condition_to_concept_role_data(problem, padding=padding, predicate_indices=predicate_indices)
+    action_applicability_all = get_full_applicability_data(s, problem, parameter_list=parameter_indices, padding=padding)
+    action_applicability = action_applicability_all[action_name]
+    in_c = torch.cat([c, action_applicability[0], goal_c], dim=0)
+    in_r = torch.cat([r, action_applicability[1], goal_r], dim=0)
+    in_c = in_c.unsqueeze(0)  # Add batch dimension
+    in_r = in_r.unsqueeze(0)  # Add batch dimension
+    num_objects = len(problem.get_objects())
+   
+    return (in_c, in_r, None, None)
 
 def get_full_applicability_data(s, problem, parameter_list, padding=0):
     agg = search.KPKCLiftedApplicableActionGenerator.create(problem, search.LiftedKPKCOptions())
     actions = agg.generate_applicable_actions(s)
     by_action_vector = {} 
     num_objects = len(problem.get_objects())
-
     for a in problem.get_domain().get_actions():
         action_name = a.get_name()
-        if parameter_list[action_name] is None:
-            parameter_indices = list(range(len(param)))
+        if parameter_list is None or parameter_list[action_name] is None:
+            parameter_indices = list(range(a.get_arity()))
         else: 
             parameter_indices = parameter_list[action_name]
         if len(parameter_indices)==1 or len(parameter_indices)==0:            
@@ -217,13 +246,12 @@ def get_full_applicability_data(s, problem, parameter_list, padding=0):
 
     for a in actions:
         action_name = a.get_action().get_name()
-        if parameter_list[action_name] is None:
-            parameter_indices = list(range(len(param)))
+        if parameter_list is None or parameter_list[action_name] is None:
+            parameter_indices = list(range(len(a.get_objects())))
         else: 
             parameter_indices = parameter_list[action_name]
-        # print(len(parameter_indices))
         param = a.get_objects()
-        
+       
         if len(parameter_indices)==1:
             by_action_vector[action_name][0][0, param[parameter_indices[0]].get_index()] = 1.0
         elif len(parameter_indices)==0:
@@ -233,8 +261,6 @@ def get_full_applicability_data(s, problem, parameter_list, padding=0):
             by_action_vector[action_name][1][0, param[parameter_indices[0]].get_index(), param[parameter_indices[1]].get_index()] = 1.0
         else:
             raise ValueError(f"Unsupported number of parameters for action {action_name}: {len(parameter_indices)}")
-    if "putdown" in by_action_vector:
-        print(f"final: {by_action_vector['putdown']}")
     return by_action_vector
 
 def optimal_actions_to_concept_role_data(optimal_actions, problem, parameter_indices, padding=0, all_actions=None):
@@ -245,7 +271,7 @@ def optimal_actions_to_concept_role_data(optimal_actions, problem, parameter_ind
     role_p = torch.zeros((0, num_objects+padding, num_objects+padding), dtype=torch.float32)
     
     a0= all_actions[0]
-    if  parameter_indices[a0.get_action().get_name()] is None:
+    if  parameter_indices is None or parameter_indices[a0.get_action().get_name()] is None:
         parameter_indices = list(range(len(a0.get_objects())))
     else: 
         parameter_indices = parameter_indices[a0.get_action().get_name()]

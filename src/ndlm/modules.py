@@ -1,3 +1,5 @@
+import copy
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -236,14 +238,44 @@ class MultiLayerNDLM(nn.Module):
     def __init__(self, in_concepts, in_roles, out_concepts, out_roles, config):
         super().__init__()
         self.config = config
+        self.initial_ffn = getattr(self.config, "INITIAL_FFN", False)
+        if self.initial_ffn:
+            self.initial_concept_ffn = CFFN(
+                in_concepts,
+                self.config.NUM_HIDDEN_CONCEPTS,
+                self.config.ACTIVATION_FUNCTION,
+            )
+            self.initial_role_ffn = RFFN(
+                in_roles,
+                self.config.NUM_HIDDEN_ROLES,
+                self.config.ACTIVATION_FUNCTION,
+            )
         self.layers = nn.ModuleList()
         for i in range(self.config.NUM_LAYERS):
-            _in_concepts = in_concepts if i == 0 else self.config.NUM_HIDDEN_CONCEPTS
-            _in_roles = in_roles if i == 0 else self.config.NUM_HIDDEN_ROLES
+            _in_concepts = (
+                self.config.NUM_HIDDEN_CONCEPTS
+                if self.initial_ffn or i > 0
+                else in_concepts
+            )
+            _in_roles = (
+                self.config.NUM_HIDDEN_ROLES if self.initial_ffn or i > 0 else in_roles
+            )
             _out_concepts = out_concepts if i == self.config.NUM_LAYERS - 1 else self.config.NUM_HIDDEN_CONCEPTS
             _out_roles = out_roles if i == self.config.NUM_LAYERS - 1 else self.config.NUM_HIDDEN_ROLES
             # don't apply activation function on last layer (addapt if multilayer MLPs are used in the future)
             _activation_function = self.config.ACTIVATION_FUNCTION if i < self.config.NUM_LAYERS - 1 else nn.Identity()
+            if self.config.INPUT_RESIDUAL:
+                if i >= 1:
+                    _in_concepts += in_concepts
+                    _in_roles += in_roles
+                           
+            if self.config.RESIDUAL:
+                if i == 1:
+                    _in_concepts += in_concepts
+                    _in_roles += in_roles
+                elif i > 1:
+                    _in_concepts += self.config.NUM_HIDDEN_CONCEPTS
+                    _in_roles += self.config.NUM_HIDDEN_ROLES
 
             # print("Layer", i, "in_concepts", _in_concepts, "in_roles", _in_roles, "out_concepts", _out_concepts, "out_roles", _out_roles)
             if config.MODE == "relaxed":
@@ -254,12 +286,30 @@ class MultiLayerNDLM(nn.Module):
                 raise ValueError("Invalid MODE in config. Expected 'relaxed' or 'strict', got: {}".format(config.MODE))
             
     def forward(self, concepts, roles):
-        out_concepts = concepts
-        out_roles = roles
+        in_concepts = concepts
+        in_roles = roles
+        if self.initial_ffn:
+            in_concepts = self.initial_concept_ffn(in_concepts)
+            in_roles = self.initial_role_ffn(in_roles)
         # apply layers sequentially
-        for layer in self.layers:
-            out_concepts, out_roles = layer(out_concepts, out_roles)
-        return out_concepts, out_roles
+        for i, layer in enumerate(self.layers):
+            previous_concepts_intermediate = in_concepts
+            previous_roles_intermediate = in_roles
+            
+            # Concatenates input concepts and roles to the input of the next layer
+            if i>0 and self.config.INPUT_RESIDUAL:
+                in_concepts = torch.cat([in_concepts, concepts], dim=1)
+                in_roles = torch.cat([in_roles, roles], dim=1)
+            # Concatenates the output of the previous layer to the input of the next layer
+            if i>0 and self.config.RESIDUAL:
+                in_concepts = torch.cat([in_concepts, previous_concepts], dim=1)
+                in_roles = torch.cat([in_roles, previous_roles], dim=1)
+            
+            #stores output of the previous layer to be used in the next layer
+            previous_concepts = previous_concepts_intermediate
+            previous_roles = previous_roles_intermediate
+            in_concepts, in_roles = layer(in_concepts, in_roles)
+        return in_concepts, in_roles
 
 class Relaxed_Layer(nn.Module):
     def __init__(self, in_concepts, in_roles, out_concepts, out_roles, activation_function, config):
@@ -373,13 +423,27 @@ class NLM_adapter(nn.Module):
     def __init__(self, config):
         super().__init__()
         self.config = config
+
+        self.input_concept_projection = CFFN(
+            config.IN_CONCEPTS,
+            config.NUM_HIDDEN_CONCEPTS,
+            config.ACTIVATION_FUNCTION,
+        )
+        self.input_role_projection = RFFN(
+            config.IN_ROLES + 1,
+            config.NUM_HIDDEN_ROLES,
+            config.ACTIVATION_FUNCTION,
+        )
+
+        model_config = copy.copy(config)
+        model_config.INITIAL_FFN = False
         
         self.model = MultiLayerNDLM(
-            self.config.IN_CONCEPTS, 
-            self.config.IN_ROLES+1, 
-            self.config.OUT_CONCEPTS,
-            self.config.OUT_ROLES,
-            self.config
+            config.NUM_HIDDEN_CONCEPTS,
+            config.NUM_HIDDEN_ROLES,
+            config.OUT_CONCEPTS,
+            config.OUT_ROLES,
+            model_config
         )
         
     def forward(self, C,R):
@@ -391,6 +455,9 @@ class NLM_adapter(nn.Module):
         R = R.permute(0, 3, 1, 2)     # [B, R, N, N]
         #add identity role to R
         R= torch.cat([R, torch.eye(R.size(2), device=R.device).unsqueeze(0).unsqueeze(0).expand(R.size(0), 1, R.size(2), R.size(2))], dim=1)
+
+        C = self.input_concept_projection(C)
+        R = self.input_role_projection(R)
 
         out_C, out_R = self.model(C,R)
         

@@ -38,6 +38,11 @@ class config_object:
         self.TRANSITIVE_CLOSURE = False
         self.LEARNING_RATE = 1e-4
         self.WEIGHT_DECAY = 1e-4
+        self.RESIDUAL = False
+        self.INPUT_RESIDUAL = False
+        self.INITIAL_FFN = False
+        self.STRICT_RR_CHUNK_BYTES = 2 * 2**30
+
         # self.NLM_RESIDUAL = True
         # self.NLM_EXCLUDE_SELF = True
 
@@ -56,6 +61,10 @@ class config_object:
             "TRANSITIVE_CLOSURE": self.TRANSITIVE_CLOSURE,
             "LEARNING_RATE": self.LEARNING_RATE,
             "WEIGHT_DECAY": self.WEIGHT_DECAY,
+            "RESIDUAL": self.RESIDUAL,
+            "INPUT_RESIDUAL": self.INPUT_RESIDUAL,
+            "INITIAL_FFN": self.INITIAL_FFN,
+            "STRICT_RR_CHUNK_BYTES": self.STRICT_RR_CHUNK_BYTES,
         }
     
     def to_json(self):
@@ -74,8 +83,12 @@ def config_from_nlm_args(args):
 
     config.MODE = getattr(args, "ndlm_mode", "relaxed")
     config.ACTIVATION_FUNCTION = nn.Identity() if getattr(args, "ndlm_activation_function", "identity") == "identity" else nn.Sigmoid()
+    config.RESIDUAL = getattr(args, "ndlm_residual", False)
+    config.INPUT_RESIDUAL = getattr(args, "ndlm_input_residual", False)
+    config.INITIAL_FFN = getattr(args, "ndlm_initial_ffn", False)
 
     return config
+
 def config_from_json_file(file_path):
     with open(file_path, 'r') as f:
         config_dict = json.load(f)

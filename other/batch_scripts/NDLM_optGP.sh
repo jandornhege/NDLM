@@ -6,18 +6,29 @@
 #SBATCH --mem=64g                   # Memory allocation
 #SBATCH --partition=rleap_gpu_24gb  # Partition (queue) to use
 #SBATCH --output=/work/rleap1/jan.dornhege/B_Runs/%A_%a.txt  # Output log file per array task
-#SBATCH --time=06:00:00
+#SBATCH --time=12:00:00
 #SBATCH --array=0-0         # One task per 1D-ARC benchmark
 
 TASK_NAMES=(
-        moose_ferry
+        # on
+        # moose_ferry
         # clear
         # miconic
         # delivery
         # npuzzle
         # logistics
+        # logistics_4_actions_single_goal
         # gripper_single_goal
         # gripper
+        # navigation-xy
+        # grid
+        logistics
+        blocks
+        blocks-m
+        grid
+        miconic
+        visitall
+        visitall-xy
 )
 
 TASK_NAME="${TASK_NAMES[$SLURM_ARRAY_TASK_ID]}"
@@ -31,10 +42,34 @@ cd /work/rleap1/jan.dornhege/NDLM/src/
 
 export PYTHONPATH=/work/rleap1/jan.dornhege/neural-logic-machines:/work/rleap1/jan.dornhege/neural-logic-machines/third_party/Jacinle:$PYTHONPATH
 
+
 python tasks/learn_task.py \
-	--task optGP \
-	--name "$TASK_NAME" \
-	--model NDLM \
-	--dump-dir /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/c2/$TASK_NAME \
-	--config-file /work/rleap1/jan.dornhege/NDLM/src/ndlm/config_files/c2.json \
-        --max-sampling-seconds-per-problem 60
+        --task optGP \
+        --domain "$TASK_NAME" \
+        --num-train-states 300 \
+        --num-test-states 0 \
+        --sampling-method opt_then_bfs \
+	--model NLM \
+        --test-interval 10 \
+        --nlm-breadth 3 \
+	--dump-dir /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/$TASK_NAME/ \
+        --data-path /work/rleap1/jan.dornhege/NDLM/src/data/data_more_expressive_gp/ \
+        --max-sampling-seconds-per-problem 300 \
+        --remove-arguments \
+        --test_supervised \
+        --hidden-roles 10 \
+        --hidden-concepts 10 \
+        --num-layers 4 \
+        --mode strict \
+        --num-epochs 1000 \
+        --test-interval 10 \
+        --batch-size 10 \
+        --activation-function identity \
+        --loss-type BCE \
+        --weighted_loss \
+        --learning-rate 0.001 \
+        --weight-decay 0.0001
+
+        # --input-residual \
+        # --transitive-closure \
+	# --config-file /work/rleap1/jan.dornhege/NDLM/src/ndlm/config_files/c5.json \

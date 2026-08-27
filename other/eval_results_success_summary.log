@@ -1,0 +1,2410 @@
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/c4/clear-new/1784219583
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/c4/clear-new/1784219583/eval_results
+  run: 1784219583
+    total successes (from line): 39 / 39
+    total successes (from file rows): 68 / 78 (87.18%)
+    train successes: 3 / 4 (75.00%)
+    test successes: 65 / 74 (87.84%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 39 / 39 (100.00%)
+    total successes (from file rows): 68 / 78 (87.18%)
+    train successes: 3 / 4 (75.00%)
+    test successes: 65 / 74 (87.84%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/c4/clear-new/1784229468
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/c4/clear-new/1784229468/eval_results
+  run: 1784229468
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/c4/clear-new/1784301681
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/c4/clear-new/1784301681/eval_results
+  run: 1784301681
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/c4/gripper_single_goal/1784309426
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/c4/gripper_single_goal/1784309426/eval_results
+  run: 1786477148.3719294
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1786477427.1930282
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1786478225.871846
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  summary
+    runs with output.log: 3
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/c4/gripper_single_goal/1784311768
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/c4/gripper_single_goal/1784311768/eval_results
+  run: 1784311768
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/c4/logistics/1786458183
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/c4/logistics/1786458183/eval_results
+  run: 1786528904.6255105
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1786528983.9501154
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  summary
+    runs with output.log: 2
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/c4/logistics/1786458523
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/c4/logistics/1786458523/eval_results
+  run: 1786528934.2393243
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/c4/on/1784301681
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/c4/on/1784301681/eval_results
+  run: 1784301681
+    total successes (from line): 34 / 39
+    total successes (from file rows): 69 / 78 (88.46%)
+    train successes: 6 / 6 (100.00%)
+    test successes: 63 / 72 (87.50%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 34 / 39 (87.18%)
+    total successes (from file rows): 69 / 78 (88.46%)
+    train successes: 6 / 6 (100.00%)
+    test successes: 63 / 72 (87.50%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/c4_2/clear-new/1784219583
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/c4_2/clear-new/1784219583/eval_results
+  run: 1784219583
+    total successes (from line): 27 / 39
+    total successes (from file rows): 27 / 39 (69.23%)
+    train successes: 1 / 2 (50.00%)
+    test successes: 26 / 37 (70.27%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 27 / 39 (69.23%)
+    total successes (from file rows): 27 / 39 (69.23%)
+    train successes: 1 / 2 (50.00%)
+    test successes: 26 / 37 (70.27%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/c4_2/clear-new/1784301681
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/c4_2/clear-new/1784301681/eval_results
+  run: 1784301681
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/blocks/1786543641
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/blocks/1786543641/eval_results
+  run: 1786620782.1852028
+    total successes (from line): 32 / 35
+    total successes (from file rows): 32 / 35 (91.43%)
+    train successes: 18 / 18 (100.00%)
+    test successes: 14 / 17 (82.35%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 32 / 35 (91.43%)
+    total successes (from file rows): 32 / 35 (91.43%)
+    train successes: 18 / 18 (100.00%)
+    test successes: 14 / 17 (82.35%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/blocks/1786545976
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/blocks/1786545976/eval_results
+  run: 1786620780.7740214
+    total successes (from line): 31 / 35
+    total successes (from file rows): 31 / 35 (88.57%)
+    train successes: 17 / 18 (94.44%)
+    test successes: 14 / 17 (82.35%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 31 / 35 (88.57%)
+    total successes (from file rows): 31 / 35 (88.57%)
+    train successes: 17 / 18 (94.44%)
+    test successes: 14 / 17 (82.35%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/blocks/1786548667
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/blocks/1786548667/eval_results
+  run: 1786620829.3370407
+    total successes (from line): 33 / 35
+    total successes (from file rows): 33 / 35 (94.29%)
+    train successes: 18 / 18 (100.00%)
+    test successes: 15 / 17 (88.24%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 33 / 35 (94.29%)
+    total successes (from file rows): 33 / 35 (94.29%)
+    train successes: 18 / 18 (100.00%)
+    test successes: 15 / 17 (88.24%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/blocks/1786554261
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/blocks/1786554261/eval_results
+  run: 1786620836.1753936
+    total successes (from line): 28 / 35
+    total successes (from file rows): 28 / 35 (80.00%)
+    train successes: 18 / 18 (100.00%)
+    test successes: 10 / 17 (58.82%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 28 / 35 (80.00%)
+    total successes (from file rows): 28 / 35 (80.00%)
+    train successes: 18 / 18 (100.00%)
+    test successes: 10 / 17 (58.82%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/blocks/1786558055
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/blocks/1786558055/eval_results
+  run: 1786620849.7180653
+    total successes (from line): 31 / 35
+    total successes (from file rows): 31 / 35 (88.57%)
+    train successes: 18 / 18 (100.00%)
+    test successes: 13 / 17 (76.47%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 31 / 35 (88.57%)
+    total successes (from file rows): 31 / 35 (88.57%)
+    train successes: 18 / 18 (100.00%)
+    test successes: 13 / 17 (76.47%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/blocks/1786566831
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/blocks/1786566831/eval_results
+  run: 1786620856.1685011
+    total successes (from line): 35 / 35
+    total successes (from file rows): 35 / 35 (100.00%)
+    train successes: 18 / 18 (100.00%)
+    test successes: 17 / 17 (100.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 35 / 35 (100.00%)
+    total successes (from file rows): 35 / 35 (100.00%)
+    train successes: 18 / 18 (100.00%)
+    test successes: 17 / 17 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/grid/1786372548
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/grid/1786372548/eval_results
+  run: 1786623145.634958
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/grid/1786372811
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/grid/1786372811/eval_results
+  run: 1786623150.448332
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/grid/1786544641
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/grid/1786544641/eval_results
+  run: 1786623154.4511135
+    total successes (from line): 47 / 55
+    total successes (from file rows): 47 / 55 (85.45%)
+    train successes: 35 / 35 (100.00%)
+    test successes: 12 / 20 (60.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 47 / 55 (85.45%)
+    total successes (from file rows): 47 / 55 (85.45%)
+    train successes: 35 / 35 (100.00%)
+    test successes: 12 / 20 (60.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/grid/1786546764
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/grid/1786546764/eval_results
+  run: 1786623188.2552059
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/grid/1786551201
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/grid/1786551201/eval_results
+  run: 1786623192.7985873
+    total successes (from line): 49 / 55
+    total successes (from file rows): 49 / 55 (89.09%)
+    train successes: 35 / 35 (100.00%)
+    test successes: 14 / 20 (70.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 49 / 55 (89.09%)
+    total successes (from file rows): 49 / 55 (89.09%)
+    train successes: 35 / 35 (100.00%)
+    test successes: 14 / 20 (70.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/gripper/1786478285
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/gripper/1786478285/eval_results
+  run: 1786531405.345218
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1786533929.5698261
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  run: 1786539154.0493383
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  run: 1786539424.0877397
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  summary
+    runs with output.log: 4
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 93 / 93 (100.00%)
+    total successes (from file rows): 93 / 93 (100.00%)
+    train successes: 39 / 39 (100.00%)
+    test successes: 54 / 54 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/gripper/1786482754
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/gripper/1786482754/eval_results
+  run: 1786532036.6149347
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1786533989.656151
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  run: 1786539213.378021
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  run: 1786539454.2479324
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  summary
+    runs with output.log: 4
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 93 / 93 (100.00%)
+    total successes (from file rows): 93 / 93 (100.00%)
+    train successes: 39 / 39 (100.00%)
+    test successes: 54 / 54 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/gripper/1786484359
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/gripper/1786484359/eval_results
+  run: 1786532667.6765661
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1786534079.797611
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  run: 1786539303.941809
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  run: 1786539484.2594097
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  summary
+    runs with output.log: 4
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 93 / 93 (100.00%)
+    total successes (from file rows): 93 / 93 (100.00%)
+    train successes: 39 / 39 (100.00%)
+    test successes: 54 / 54 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/gripper/1786495290
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/gripper/1786495290/eval_results
+  run: 1786533298.944326
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1786534139.9063616
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  run: 1786539363.9849021
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  summary
+    runs with output.log: 3
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 62 / 62 (100.00%)
+    total successes (from file rows): 62 / 62 (100.00%)
+    train successes: 26 / 26 (100.00%)
+    test successes: 36 / 36 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/logistics/1786375199
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/logistics/1786375199/eval_results
+  run: 1786375199
+    total successes (from line): 18 / 44
+    total successes (from file rows): 18 / 44 (40.91%)
+    train successes: 18 / 24 (75.00%)
+    test successes: 0 / 20 (0.00%)
+  run: 1786458077.876218
+    total successes (from line): 36 / 44
+    total successes (from file rows): 36 / 44 (81.82%)
+    train successes: 18 / 24 (75.00%)
+    test successes: 18 / 20 (90.00%)
+  summary
+    runs with output.log: 2
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 54 / 88 (61.36%)
+    total successes (from file rows): 54 / 88 (61.36%)
+    train successes: 36 / 48 (75.00%)
+    test successes: 18 / 40 (45.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/logistics/1786375210
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/logistics/1786375210/eval_results
+  run: 1786375210
+    total successes (from line): 23 / 44
+    total successes (from file rows): 23 / 44 (52.27%)
+    train successes: 21 / 24 (87.50%)
+    test successes: 2 / 20 (10.00%)
+  run: 1786458077.6205564
+    total successes (from line): 30 / 44
+    total successes (from file rows): 30 / 44 (68.18%)
+    train successes: 21 / 24 (87.50%)
+    test successes: 9 / 20 (45.00%)
+  summary
+    runs with output.log: 2
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 53 / 88 (60.23%)
+    total successes (from file rows): 53 / 88 (60.23%)
+    train successes: 42 / 48 (87.50%)
+    test successes: 11 / 40 (27.50%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/logistics/1786375216
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/logistics/1786375216/eval_results
+  run: 1786375216
+    total successes (from line): 30 / 44
+    total successes (from file rows): 30 / 44 (68.18%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 6 / 20 (30.00%)
+  run: 1786458077.6210876
+    total successes (from line): 44 / 44
+    total successes (from file rows): 44 / 44 (100.00%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 20 / 20 (100.00%)
+  run: 1786458591.969831
+    total successes (from line): 44 / 44
+    total successes (from file rows): 44 / 44 (100.00%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 20 / 20 (100.00%)
+  summary
+    runs with output.log: 3
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 118 / 132 (89.39%)
+    total successes (from file rows): 118 / 132 (89.39%)
+    train successes: 72 / 72 (100.00%)
+    test successes: 46 / 60 (76.67%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/logistics/1786375219
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/logistics/1786375219/eval_results
+  run: 1786375219
+    total successes (from line): 31 / 44
+    total successes (from file rows): 55 / 88 (62.50%)
+    train successes: 45 / 48 (93.75%)
+    test successes: 10 / 40 (25.00%)
+  run: 1786457762.8130322
+    total successes (from line): 43 / 44
+    total successes (from file rows): 43 / 44 (97.73%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 19 / 20 (95.00%)
+  run: 1786457762.813056
+    total successes (from line): 43 / 44
+    total successes (from file rows): 43 / 44 (97.73%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 19 / 20 (95.00%)
+  run: 1786457762.8194752
+    total successes (from line): 43 / 44
+    total successes (from file rows): 43 / 44 (97.73%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 19 / 20 (95.00%)
+  run: 1786457762.8249934
+    total successes (from line): 43 / 44
+    total successes (from file rows): 43 / 44 (97.73%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 19 / 20 (95.00%)
+  run: 1786457762.8260224
+    total successes (from line): 43 / 44
+    total successes (from file rows): 43 / 44 (97.73%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 19 / 20 (95.00%)
+  run: 1786458077.5692732
+    total successes (from line): 43 / 44
+    total successes (from file rows): 43 / 44 (97.73%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 19 / 20 (95.00%)
+  summary
+    runs with output.log: 7
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 289 / 308 (93.83%)
+    total successes (from file rows): 313 / 352 (88.92%)
+    train successes: 189 / 192 (98.44%)
+    test successes: 124 / 160 (77.50%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/logistics/1786375227
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/logistics/1786375227/eval_results
+  run: 1786375227
+    total successes (from line): 11 / 44
+    total successes (from file rows): 22 / 88 (25.00%)
+    train successes: 22 / 48 (45.83%)
+    test successes: 0 / 40 (0.00%)
+  run: 1786458077.5527308
+    total successes (from line): 11 / 44
+    total successes (from file rows): 11 / 44 (25.00%)
+    train successes: 11 / 24 (45.83%)
+    test successes: 0 / 20 (0.00%)
+  summary
+    runs with output.log: 2
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 22 / 88 (25.00%)
+    total successes (from file rows): 33 / 132 (25.00%)
+    train successes: 33 / 72 (45.83%)
+    test successes: 0 / 60 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/logistics/1786375249
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/logistics/1786375249/eval_results
+  run: 1786375249
+    total successes (from line): 10 / 44
+    total successes (from file rows): 20 / 88 (22.73%)
+    train successes: 20 / 48 (41.67%)
+    test successes: 0 / 40 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 10 / 44 (22.73%)
+    total successes (from file rows): 20 / 88 (22.73%)
+    train successes: 20 / 48 (41.67%)
+    test successes: 0 / 40 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/logistics/1786375252
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/logistics/1786375252/eval_results
+  run: 1786375252
+    total successes (from line): 0 / 44
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 44 (0.00%)
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/logistics/1786458183
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/logistics/1786458183/eval_results
+  run: 1786529007.1085532
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1786529227.7960923
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1786529628.4133613
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  summary
+    runs with output.log: 3
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/logistics/1786458523
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/logistics/1786458523/eval_results
+  run: 1786529084.9030812
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1786529325.8892624
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1786529779.5382416
+    total successes (from line): 44 / 44
+    total successes (from file rows): 44 / 44 (100.00%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 20 / 20 (100.00%)
+  run: 1786530141.743781
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1786530773.6892006
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  summary
+    runs with output.log: 5
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 44 / 44 (100.00%)
+    total successes (from file rows): 44 / 44 (100.00%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 20 / 20 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/logistics/layers_4_hidden_5_act_identity/1786625901
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/logistics/layers_4_hidden_5_act_identity/1786625901/eval_results
+  run: 1786709420.4537203
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/logistics_4_actions_single_goal
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/logistics_4_actions_single_goal/eval_results
+  run: 1784805575
+    total successes (from line): 5 / 27
+    total successes (from file rows): 5 / 27 (18.52%)
+    train successes: 3 / 7 (42.86%)
+    test successes: 2 / 20 (10.00%)
+  run: 1784805611
+    total successes (from line): 12 / 27
+    total successes (from file rows): 12 / 27 (44.44%)
+    train successes: 5 / 7 (71.43%)
+    test successes: 7 / 20 (35.00%)
+  run: 1784805613
+    total successes (from line): 12 / 27
+    total successes (from file rows): 12 / 27 (44.44%)
+    train successes: 7 / 7 (100.00%)
+    test successes: 5 / 20 (25.00%)
+  run: 1784805619
+    total successes (from line): 14 / 27
+    total successes (from file rows): 14 / 27 (51.85%)
+    train successes: 5 / 7 (71.43%)
+    test successes: 9 / 20 (45.00%)
+  run: 1784806808
+    total successes (from line): 10 / 27
+    total successes (from file rows): 10 / 27 (37.04%)
+    train successes: 4 / 7 (57.14%)
+    test successes: 6 / 20 (30.00%)
+  run: 1784806814
+    total successes (from line): 11 / 27
+    total successes (from file rows): 86 / 219 (39.27%)
+    train successes: 25 / 49 (51.02%)
+    test successes: 61 / 170 (35.88%)
+  run: 1784806814_1
+    total successes (from line): 9 / 27
+    total successes (from file rows): 9 / 27 (33.33%)
+    train successes: 4 / 7 (57.14%)
+    test successes: 5 / 20 (25.00%)
+  run: 1784806827
+    total successes (from line): 8 / 27
+    total successes (from file rows): 8 / 27 (29.63%)
+    train successes: 5 / 7 (71.43%)
+    test successes: 3 / 20 (15.00%)
+  run: 1784806831
+    total successes (from line): 10 / 27
+    total successes (from file rows): 10 / 27 (37.04%)
+    train successes: 5 / 7 (71.43%)
+    test successes: 5 / 20 (25.00%)
+  run: 1784809559
+    total successes (from line): 0 / 27
+    total successes (from file rows): 0 / 27 (0.00%)
+    train successes: 0 / 7 (0.00%)
+    test successes: 0 / 20 (0.00%)
+  run: 1784809562
+    total successes (from line): 6 / 27
+    total successes (from file rows): 6 / 27 (22.22%)
+    train successes: 5 / 7 (71.43%)
+    test successes: 1 / 20 (5.00%)
+  run: 1784809568
+    total successes (from line): 7 / 27
+    total successes (from file rows): 7 / 27 (25.93%)
+    train successes: 4 / 7 (57.14%)
+    test successes: 3 / 20 (15.00%)
+  run: 1784809572
+    total successes (from line): 5 / 27
+    total successes (from file rows): 5 / 27 (18.52%)
+    train successes: 5 / 7 (71.43%)
+    test successes: 0 / 20 (0.00%)
+  run: 1784810078
+    total successes (from line): 3 / 27
+    total successes (from file rows): 3 / 27 (11.11%)
+    train successes: 3 / 7 (42.86%)
+    test successes: 0 / 20 (0.00%)
+  run: 1784810114
+    total successes (from line): 5 / 27
+    total successes (from file rows): 5 / 27 (18.52%)
+    train successes: 4 / 7 (57.14%)
+    test successes: 1 / 20 (5.00%)
+  run: 1784827539
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1784827546
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1784827553
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1784827569
+    total successes (from line): 14 / 27
+    total successes (from file rows): 14 / 27 (51.85%)
+    train successes: 7 / 7 (100.00%)
+    test successes: 7 / 20 (35.00%)
+  run: 1784827580
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1784828625
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1784828627
+    total successes (from line): 11 / 27
+    total successes (from file rows): 11 / 27 (40.74%)
+    train successes: 6 / 7 (85.71%)
+    test successes: 5 / 20 (25.00%)
+  run: 1784829476
+    total successes (from line): 4 / 27
+    total successes (from file rows): 4 / 27 (14.81%)
+    train successes: 2 / 7 (28.57%)
+    test successes: 2 / 20 (10.00%)
+  run: 1784829576
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1784830086
+    total successes (from line): 2 / 27
+    total successes (from file rows): 2 / 27 (7.41%)
+    train successes: 0 / 7 (0.00%)
+    test successes: 2 / 20 (10.00%)
+  run: 1784830101
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1784907874
+    total successes (from line): 9 / 27
+    total successes (from file rows): 18 / 54 (33.33%)
+    train successes: 13 / 14 (92.86%)
+    test successes: 5 / 40 (12.50%)
+  run: 1784908404
+    total successes (from line): 8 / 27
+    total successes (from file rows): 8 / 27 (29.63%)
+    train successes: 5 / 7 (71.43%)
+    test successes: 3 / 20 (15.00%)
+  run: 1784908409
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  summary
+    runs with output.log: 29
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 165 / 567 (29.10%)
+    total successes (from file rows): 249 / 786 (31.68%)
+    train successes: 117 / 196 (59.69%)
+    test successes: 132 / 590 (22.37%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/miconic/1786544671
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/miconic/1786544671/eval_results
+  run: 1786620858.650136
+    total successes (from line): 12 / 30
+    total successes (from file rows): 12 / 30 (40.00%)
+    train successes: 9 / 10 (90.00%)
+    test successes: 3 / 20 (15.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 12 / 30 (40.00%)
+    total successes (from file rows): 12 / 30 (40.00%)
+    train successes: 9 / 10 (90.00%)
+    test successes: 3 / 20 (15.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/miconic/1786546824
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/miconic/1786546824/eval_results
+  run: 1786620863.2903721
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/miconic/1786552195
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/miconic/1786552195/eval_results
+  run: 1786620869.0698624
+    total successes (from line): 27 / 30
+    total successes (from file rows): 27 / 30 (90.00%)
+    train successes: 10 / 10 (100.00%)
+    test successes: 17 / 20 (85.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 27 / 30 (90.00%)
+    total successes (from file rows): 27 / 30 (90.00%)
+    train successes: 10 / 10 (100.00%)
+    test successes: 17 / 20 (85.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/miconic/1786555427
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/miconic/1786555427/eval_results
+  run: 1786620915.308887
+    total successes (from line): 29 / 30
+    total successes (from file rows): 29 / 30 (96.67%)
+    train successes: 10 / 10 (100.00%)
+    test successes: 19 / 20 (95.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 29 / 30 (96.67%)
+    total successes (from file rows): 29 / 30 (96.67%)
+    train successes: 10 / 10 (100.00%)
+    test successes: 19 / 20 (95.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/miconic/1786563042
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/miconic/1786563042/eval_results
+  run: 1786620932.5442739
+    total successes (from line): 28 / 30
+    total successes (from file rows): 28 / 30 (93.33%)
+    train successes: 10 / 10 (100.00%)
+    test successes: 18 / 20 (90.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 28 / 30 (93.33%)
+    total successes (from file rows): 28 / 30 (93.33%)
+    train successes: 10 / 10 (100.00%)
+    test successes: 18 / 20 (90.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/miconic/1786570213
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/miconic/1786570213/eval_results
+  run: 1786620971.3001707
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1786629725.1623132
+    total successes (from line): 28 / 30
+    total successes (from file rows): 28 / 30 (93.33%)
+    train successes: 10 / 10 (100.00%)
+    test successes: 18 / 20 (90.00%)
+  run: 1786643440.0608377
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  summary
+    runs with output.log: 3
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 28 / 30 (93.33%)
+    total successes (from file rows): 28 / 30 (93.33%)
+    train successes: 10 / 10 (100.00%)
+    test successes: 18 / 20 (90.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/navigation-xy/1786363409
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/navigation-xy/1786363409/eval_results
+  run: 1786363409
+    total successes (from line): 320 / 320
+    total successes (from file rows): 320 / 320 (100.00%)
+    train successes: 224 / 224 (100.00%)
+    test successes: 96 / 96 (100.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 320 / 320 (100.00%)
+    total successes (from file rows): 320 / 320 (100.00%)
+    train successes: 224 / 224 (100.00%)
+    test successes: 96 / 96 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/visitall-xy/1786545642
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/visitall-xy/1786545642/eval_results
+  run: 1786621068.5732439
+    total successes (from line): 22 / 49
+    total successes (from file rows): 22 / 49 (44.90%)
+    train successes: 22 / 29 (75.86%)
+    test successes: 0 / 20 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 22 / 49 (44.90%)
+    total successes (from file rows): 22 / 49 (44.90%)
+    train successes: 22 / 29 (75.86%)
+    test successes: 0 / 20 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/visitall-xy/1786547308
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/visitall-xy/1786547308/eval_results
+  run: 1786621077.928198
+    total successes (from line): 14 / 49
+    total successes (from file rows): 14 / 49 (28.57%)
+    train successes: 14 / 29 (48.28%)
+    test successes: 0 / 20 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 14 / 49 (28.57%)
+    total successes (from file rows): 14 / 49 (28.57%)
+    train successes: 14 / 29 (48.28%)
+    test successes: 0 / 20 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/visitall-xy/1786553705
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/visitall-xy/1786553705/eval_results
+  run: 1786621090.7325711
+    total successes (from line): 20 / 49
+    total successes (from file rows): 20 / 49 (40.82%)
+    train successes: 19 / 29 (65.52%)
+    test successes: 1 / 20 (5.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 20 / 49 (40.82%)
+    total successes (from file rows): 20 / 49 (40.82%)
+    train successes: 19 / 29 (65.52%)
+    test successes: 1 / 20 (5.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/visitall-xy/1786556534
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/visitall-xy/1786556534/eval_results
+  run: 1786621132.0353177
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/visitall-xy/1786564318
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/visitall-xy/1786564318/eval_results
+  run: 1786621136.7557874
+    total successes (from line): 29 / 49
+    total successes (from file rows): 29 / 49 (59.18%)
+    train successes: 23 / 29 (79.31%)
+    test successes: 6 / 20 (30.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 29 / 49 (59.18%)
+    total successes (from file rows): 29 / 49 (59.18%)
+    train successes: 23 / 29 (79.31%)
+    test successes: 6 / 20 (30.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/visitall-xy/1786573037
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/visitall-xy/1786573037/eval_results
+  run: 1786621150.0887341
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/visitall/1786544731
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/visitall/1786544731/eval_results
+  run: 1786621002.7764573
+    total successes (from line): 37 / 41
+    total successes (from file rows): 37 / 41 (90.24%)
+    train successes: 19 / 19 (100.00%)
+    test successes: 18 / 22 (81.82%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 37 / 41 (90.24%)
+    total successes (from file rows): 37 / 41 (90.24%)
+    train successes: 19 / 19 (100.00%)
+    test successes: 18 / 22 (81.82%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/visitall/1786547308
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/visitall/1786547308/eval_results
+  run: 1786621019.6401858
+    total successes (from line): 38 / 41
+    total successes (from file rows): 38 / 41 (92.68%)
+    train successes: 19 / 19 (100.00%)
+    test successes: 19 / 22 (86.36%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 38 / 41 (92.68%)
+    total successes (from file rows): 38 / 41 (92.68%)
+    train successes: 19 / 19 (100.00%)
+    test successes: 19 / 22 (86.36%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/visitall/1786553436
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/visitall/1786553436/eval_results
+  run: 1786621018.7371247
+    total successes (from line): 35 / 41
+    total successes (from file rows): 35 / 41 (85.37%)
+    train successes: 19 / 19 (100.00%)
+    test successes: 16 / 22 (72.73%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 35 / 41 (85.37%)
+    total successes (from file rows): 35 / 41 (85.37%)
+    train successes: 19 / 19 (100.00%)
+    test successes: 16 / 22 (72.73%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/visitall/1786556030
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/visitall/1786556030/eval_results
+  run: 1786621042.5656261
+    total successes (from line): 41 / 41
+    total successes (from file rows): 41 / 41 (100.00%)
+    train successes: 19 / 19 (100.00%)
+    test successes: 22 / 22 (100.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 41 / 41 (100.00%)
+    total successes (from file rows): 41 / 41 (100.00%)
+    train successes: 19 / 19 (100.00%)
+    test successes: 22 / 22 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/visitall/1786563711
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/visitall/1786563711/eval_results
+  run: 1786621055.4461098
+    total successes (from line): 37 / 41
+    total successes (from file rows): 37 / 41 (90.24%)
+    train successes: 19 / 19 (100.00%)
+    test successes: 18 / 22 (81.82%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 37 / 41 (90.24%)
+    total successes (from file rows): 37 / 41 (90.24%)
+    train successes: 19 / 19 (100.00%)
+    test successes: 18 / 22 (81.82%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/visitall/1786573035
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_OPTGP/sandbox/visitall/1786573035/eval_results
+  run: 1786621059.665803
+    total successes (from line): 41 / 41
+    total successes (from file rows): 41 / 41 (100.00%)
+    train successes: 19 / 19 (100.00%)
+    test successes: 22 / 22 (100.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 41 / 41 (100.00%)
+    total successes (from file rows): 41 / 41 (100.00%)
+    train successes: 19 / 19 (100.00%)
+    test successes: 22 / 22 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_4_hidden_10_act_identity/1786649041
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_4_hidden_10_act_identity/1786649041/eval_results
+  run: 1786718410.15291
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  run: 1786720637.9780638
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  summary
+    runs with output.log: 2
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 62 / 62 (100.00%)
+    total successes (from file rows): 62 / 62 (100.00%)
+    train successes: 26 / 26 (100.00%)
+    test successes: 36 / 36 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_4_hidden_10_act_identity/1786657700
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_4_hidden_10_act_identity/1786657700/eval_results
+  run: 1786718440.2334526
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  run: 1786720668.2154748
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  summary
+    runs with output.log: 2
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 62 / 62 (100.00%)
+    total successes (from file rows): 62 / 62 (100.00%)
+    train successes: 26 / 26 (100.00%)
+    test successes: 36 / 36 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_4_hidden_10_act_sigmoid/1786652757
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_4_hidden_10_act_sigmoid/1786652757/eval_results
+  run: 1786718470.526717
+    total successes (from line): 0 / 31
+    total successes (from file rows): 0 / 31 (0.00%)
+    train successes: 0 / 13 (0.00%)
+    test successes: 0 / 18 (0.00%)
+  run: 1786720698.9714112
+    total successes (from line): 0 / 31
+    total successes (from file rows): 0 / 31 (0.00%)
+    train successes: 0 / 13 (0.00%)
+    test successes: 0 / 18 (0.00%)
+  summary
+    runs with output.log: 2
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 62 (0.00%)
+    total successes (from file rows): 0 / 62 (0.00%)
+    train successes: 0 / 26 (0.00%)
+    test successes: 0 / 36 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_4_hidden_10_act_sigmoid/1786657809
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_4_hidden_10_act_sigmoid/1786657809/eval_results
+  run: 1786718470.5547297
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  run: 1786720698.971442
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  summary
+    runs with output.log: 2
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 62 / 62 (100.00%)
+    total successes (from file rows): 62 / 62 (100.00%)
+    train successes: 26 / 26 (100.00%)
+    test successes: 36 / 36 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_4_hidden_15_act_identity/1786652768
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_4_hidden_15_act_identity/1786652768/eval_results
+  run: 1786718501.1208065
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1786720728.8760014
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  summary
+    runs with output.log: 2
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 31 / 31 (100.00%)
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_4_hidden_15_act_identity/1786657921
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_4_hidden_15_act_identity/1786657921/eval_results
+  run: 1786718501.0887916
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1786720729.1397378
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  summary
+    runs with output.log: 2
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 31 / 31 (100.00%)
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_4_hidden_15_act_sigmoid/1786653249
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_4_hidden_15_act_sigmoid/1786653249/eval_results
+  run: 1786718531.527574
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1786720759.6361759
+    total successes (from line): 1 / 31
+    total successes (from file rows): 1 / 31 (3.23%)
+    train successes: 1 / 13 (7.69%)
+    test successes: 0 / 18 (0.00%)
+  summary
+    runs with output.log: 2
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 1 / 31 (3.23%)
+    total successes (from file rows): 1 / 31 (3.23%)
+    train successes: 1 / 13 (7.69%)
+    test successes: 0 / 18 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_4_hidden_15_act_sigmoid/1786658040
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_4_hidden_15_act_sigmoid/1786658040/eval_results
+  run: 1786720790.093248
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 31 / 31 (100.00%)
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_4_hidden_5_act_identity/1786647342
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_4_hidden_5_act_identity/1786647342/eval_results
+  run: 1786718350.6138995
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  run: 1786720577.2059555
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  summary
+    runs with output.log: 2
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 62 / 62 (100.00%)
+    total successes (from file rows): 62 / 62 (100.00%)
+    train successes: 26 / 26 (100.00%)
+    test successes: 36 / 36 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_4_hidden_5_act_identity/1786657102
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_4_hidden_5_act_identity/1786657102/eval_results
+  run: 1786718350.6139522
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  run: 1786720577.2060854
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  summary
+    runs with output.log: 2
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 62 / 62 (100.00%)
+    total successes (from file rows): 62 / 62 (100.00%)
+    train successes: 26 / 26 (100.00%)
+    test successes: 36 / 36 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_4_hidden_5_act_sigmoid/1786648336
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_4_hidden_5_act_sigmoid/1786648336/eval_results
+  run: 1786718379.7966342
+    total successes (from line): 1 / 31
+    total successes (from file rows): 1 / 31 (3.23%)
+    train successes: 1 / 13 (7.69%)
+    test successes: 0 / 18 (0.00%)
+  run: 1786720607.321174
+    total successes (from line): 1 / 31
+    total successes (from file rows): 1 / 31 (3.23%)
+    train successes: 1 / 13 (7.69%)
+    test successes: 0 / 18 (0.00%)
+  summary
+    runs with output.log: 2
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 2 / 62 (3.23%)
+    total successes (from file rows): 2 / 62 (3.23%)
+    train successes: 2 / 26 (7.69%)
+    test successes: 0 / 36 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_4_hidden_5_act_sigmoid/1786657459
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_4_hidden_5_act_sigmoid/1786657459/eval_results
+  run: 1786718410.1530142
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  run: 1786720637.9780838
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  summary
+    runs with output.log: 2
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 62 / 62 (100.00%)
+    total successes (from file rows): 62 / 62 (100.00%)
+    train successes: 26 / 26 (100.00%)
+    test successes: 36 / 36 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_6_hidden_10_act_identity/1786653799
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_6_hidden_10_act_identity/1786653799/eval_results
+  run: 1786720881.6041322
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 31 / 31 (100.00%)
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_6_hidden_10_act_identity/1786659444
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_6_hidden_10_act_identity/1786659444/eval_results
+  run: 1786720881.6041167
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 31 / 31 (100.00%)
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_6_hidden_10_act_sigmoid/1786653800
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_6_hidden_10_act_sigmoid/1786653800/eval_results
+  run: 1786720912.163208
+    total successes (from line): 0 / 31
+    total successes (from file rows): 0 / 31 (0.00%)
+    train successes: 0 / 13 (0.00%)
+    test successes: 0 / 18 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 31 (0.00%)
+    total successes (from file rows): 0 / 31 (0.00%)
+    train successes: 0 / 13 (0.00%)
+    test successes: 0 / 18 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_6_hidden_10_act_sigmoid/1786659649
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_6_hidden_10_act_sigmoid/1786659649/eval_results
+  run: 1786720942.202794
+    total successes (from line): 0 / 31
+    total successes (from file rows): 0 / 31 (0.00%)
+    train successes: 0 / 13 (0.00%)
+    test successes: 0 / 18 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 31 (0.00%)
+    total successes (from file rows): 0 / 31 (0.00%)
+    train successes: 0 / 13 (0.00%)
+    test successes: 0 / 18 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_6_hidden_15_act_identity/1786653800
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_6_hidden_15_act_identity/1786653800/eval_results
+  run: 1786720973.49367
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 31 / 31 (100.00%)
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_6_hidden_15_act_identity/1786659770
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_6_hidden_15_act_identity/1786659770/eval_results
+  run: 1786720973.4938126
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 31 / 31 (100.00%)
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_6_hidden_15_act_sigmoid/1786653800
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_6_hidden_15_act_sigmoid/1786653800/eval_results
+  run: 1786721003.6497471
+    total successes (from line): 0 / 31
+    total successes (from file rows): 0 / 31 (0.00%)
+    train successes: 0 / 13 (0.00%)
+    test successes: 0 / 18 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 31 (0.00%)
+    total successes (from file rows): 0 / 31 (0.00%)
+    train successes: 0 / 13 (0.00%)
+    test successes: 0 / 18 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_6_hidden_15_act_sigmoid/1786659778
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_6_hidden_15_act_sigmoid/1786659778/eval_results
+  run: 1786721033.7556708
+    total successes (from line): 0 / 31
+    total successes (from file rows): 0 / 31 (0.00%)
+    train successes: 0 / 13 (0.00%)
+    test successes: 0 / 18 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 31 (0.00%)
+    total successes (from file rows): 0 / 31 (0.00%)
+    train successes: 0 / 13 (0.00%)
+    test successes: 0 / 18 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_6_hidden_5_act_identity/1786653356
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_6_hidden_5_act_identity/1786653356/eval_results
+  run: 1786720790.093196
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 31 / 31 (100.00%)
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_6_hidden_5_act_identity/1786658199
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_6_hidden_5_act_identity/1786658199/eval_results
+  run: 1786720820.643178
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 31 / 31 (100.00%)
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_6_hidden_5_act_sigmoid/1786653547
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_6_hidden_5_act_sigmoid/1786653547/eval_results
+  run: 1786720850.96697
+    total successes (from line): 0 / 31
+    total successes (from file rows): 0 / 31 (0.00%)
+    train successes: 0 / 13 (0.00%)
+    test successes: 0 / 18 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 31 (0.00%)
+    total successes (from file rows): 0 / 31 (0.00%)
+    train successes: 0 / 13 (0.00%)
+    test successes: 0 / 18 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_6_hidden_5_act_sigmoid/1786658418
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_6_hidden_5_act_sigmoid/1786658418/eval_results
+  run: 1786720850.947062
+    total successes (from line): 0 / 31
+    total successes (from file rows): 0 / 31 (0.00%)
+    train successes: 0 / 13 (0.00%)
+    test successes: 0 / 18 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 31 (0.00%)
+    total successes (from file rows): 0 / 31 (0.00%)
+    train successes: 0 / 13 (0.00%)
+    test successes: 0 / 18 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_8_hidden_10_act_identity/1786653799
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_8_hidden_10_act_identity/1786653799/eval_results
+  run: 1786721156.5205555
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 31 / 31 (100.00%)
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_8_hidden_10_act_identity/1786661051
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_8_hidden_10_act_identity/1786661051/eval_results
+  run: 1786721156.5205195
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 31 / 31 (100.00%)
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_8_hidden_10_act_sigmoid/1786656358
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_8_hidden_10_act_sigmoid/1786656358/eval_results
+  run: 1786721186.7936916
+    total successes (from line): 0 / 31
+    total successes (from file rows): 0 / 31 (0.00%)
+    train successes: 0 / 13 (0.00%)
+    test successes: 0 / 18 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 31 (0.00%)
+    total successes (from file rows): 0 / 31 (0.00%)
+    train successes: 0 / 13 (0.00%)
+    test successes: 0 / 18 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_8_hidden_10_act_sigmoid/1786661919
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_8_hidden_10_act_sigmoid/1786661919/eval_results
+  run: 1786721216.9208865
+    total successes (from line): 0 / 31
+    total successes (from file rows): 0 / 31 (0.00%)
+    train successes: 0 / 13 (0.00%)
+    test successes: 0 / 18 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 31 (0.00%)
+    total successes (from file rows): 0 / 31 (0.00%)
+    train successes: 0 / 13 (0.00%)
+    test successes: 0 / 18 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_8_hidden_15_act_identity/1786656446
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_8_hidden_15_act_identity/1786656446/eval_results
+  run: 1786721247.9578247
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 31 / 31 (100.00%)
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_8_hidden_15_act_identity/1786661998
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_8_hidden_15_act_identity/1786661998/eval_results
+  run: 1786721247.9388075
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 31 / 31 (100.00%)
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_8_hidden_15_act_sigmoid/1786656852
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_8_hidden_15_act_sigmoid/1786656852/eval_results
+  run: 1786721278.3226972
+    total successes (from line): 0 / 31
+    total successes (from file rows): 0 / 31 (0.00%)
+    train successes: 0 / 13 (0.00%)
+    test successes: 0 / 18 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 31 (0.00%)
+    total successes (from file rows): 0 / 31 (0.00%)
+    train successes: 0 / 13 (0.00%)
+    test successes: 0 / 18 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_8_hidden_15_act_sigmoid/1786662361
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_8_hidden_15_act_sigmoid/1786662361/eval_results
+  run: 1786721308.47187
+    total successes (from line): 0 / 31
+    total successes (from file rows): 0 / 31 (0.00%)
+    train successes: 0 / 13 (0.00%)
+    test successes: 0 / 18 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 31 (0.00%)
+    total successes (from file rows): 0 / 31 (0.00%)
+    train successes: 0 / 13 (0.00%)
+    test successes: 0 / 18 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_8_hidden_5_act_identity/1786653799
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_8_hidden_5_act_identity/1786653799/eval_results
+  run: 1786721065.1122808
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 31 / 31 (100.00%)
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_8_hidden_5_act_identity/1786659861
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_8_hidden_5_act_identity/1786659861/eval_results
+  run: 1786721065.1122892
+    total successes (from line): 31 / 31
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 31 / 31 (100.00%)
+    total successes (from file rows): 31 / 31 (100.00%)
+    train successes: 13 / 13 (100.00%)
+    test successes: 18 / 18 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_8_hidden_5_act_sigmoid/1786653800
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_8_hidden_5_act_sigmoid/1786653800/eval_results
+  run: 1786721095.192883
+    total successes (from line): 0 / 31
+    total successes (from file rows): 0 / 31 (0.00%)
+    train successes: 0 / 13 (0.00%)
+    test successes: 0 / 18 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 31 (0.00%)
+    total successes (from file rows): 0 / 31 (0.00%)
+    train successes: 0 / 13 (0.00%)
+    test successes: 0 / 18 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_8_hidden_5_act_sigmoid/1786660784
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/gripper/layers_8_hidden_5_act_sigmoid/1786660784/eval_results
+  run: 1786721125.3200467
+    total successes (from line): 0 / 31
+    total successes (from file rows): 0 / 31 (0.00%)
+    train successes: 0 / 13 (0.00%)
+    test successes: 0 / 18 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 31 (0.00%)
+    total successes (from file rows): 0 / 31 (0.00%)
+    train successes: 0 / 13 (0.00%)
+    test successes: 0 / 18 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/1786375190
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/1786375190/eval_results
+  run: 1786623445.0629213
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1786623664.738425
+    total successes (from line): 0 / 44
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+  run: 1786623934.056383
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  summary
+    runs with output.log: 3
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 44 (0.00%)
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/1786377928
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/1786377928/eval_results
+  run: 1786623699.7135096
+    total successes (from line): 6 / 44
+    total successes (from file rows): 6 / 44 (13.64%)
+    train successes: 6 / 24 (25.00%)
+    test successes: 0 / 20 (0.00%)
+  run: 1786623969.454752
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  summary
+    runs with output.log: 2
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 6 / 44 (13.64%)
+    total successes (from file rows): 6 / 44 (13.64%)
+    train successes: 6 / 24 (25.00%)
+    test successes: 0 / 20 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/1786377929
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/1786377929/eval_results
+  run: 1786623716.6516836
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1786623979.4261217
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  summary
+    runs with output.log: 2
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/1786377978
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/1786377978/eval_results
+  run: 1786623724.9241662
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1786623983.690653
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1786624094.652533
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1786624332.9247124
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1786624432.717338
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1786624458.6397123
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1786624700.8901367
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1786624836.9148486
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1786624870.6518693
+    total successes (from line): not found
+    total successes (from file rows): 0 / 0
+    train successes: 0 / 0
+    test successes: 0 / 0
+  run: 1786624902.5286338
+    total successes (from line): 17 / 44
+    total successes (from file rows): 17 / 44 (38.64%)
+    train successes: 17 / 24 (70.83%)
+    test successes: 0 / 20 (0.00%)
+  run: 1786624964.9368672
+    total successes (from line): 17 / 44
+    total successes (from file rows): 17 / 44 (38.64%)
+    train successes: 17 / 24 (70.83%)
+    test successes: 0 / 20 (0.00%)
+  summary
+    runs with output.log: 11
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 34 / 88 (38.64%)
+    total successes (from file rows): 34 / 88 (38.64%)
+    train successes: 34 / 48 (70.83%)
+    test successes: 0 / 40 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_4_hidden_10_act_identity/1786625934
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_4_hidden_10_act_identity/1786625934/eval_results
+  run: 1786713695.6358142
+    total successes (from line): 23 / 44
+    total successes (from file rows): 23 / 44 (52.27%)
+    train successes: 23 / 24 (95.83%)
+    test successes: 0 / 20 (0.00%)
+  run: 1786718653.3577845
+    total successes (from line): 23 / 44
+    total successes (from file rows): 23 / 44 (52.27%)
+    train successes: 23 / 24 (95.83%)
+    test successes: 0 / 20 (0.00%)
+  summary
+    runs with output.log: 2
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 46 / 88 (52.27%)
+    total successes (from file rows): 46 / 88 (52.27%)
+    train successes: 46 / 48 (95.83%)
+    test successes: 0 / 40 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_4_hidden_10_act_identity/1786631350
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_4_hidden_10_act_identity/1786631350/eval_results
+  run: 1786718714.973676
+    total successes (from line): 32 / 44
+    total successes (from file rows): 32 / 44 (72.73%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 8 / 20 (40.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 32 / 44 (72.73%)
+    total successes (from file rows): 32 / 44 (72.73%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 8 / 20 (40.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_4_hidden_10_act_sigmoid/1786625962
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_4_hidden_10_act_sigmoid/1786625962/eval_results
+  run: 1786718714.9737003
+    total successes (from line): 0 / 44
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 44 (0.00%)
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_4_hidden_10_act_sigmoid/1786632637
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_4_hidden_10_act_sigmoid/1786632637/eval_results
+  run: 1786718775.9164255
+    total successes (from line): 2 / 44
+    total successes (from file rows): 2 / 44 (4.55%)
+    train successes: 2 / 24 (8.33%)
+    test successes: 0 / 20 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 2 / 44 (4.55%)
+    total successes (from file rows): 2 / 44 (4.55%)
+    train successes: 2 / 24 (8.33%)
+    test successes: 0 / 20 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_4_hidden_15_act_identity/1786626001
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_4_hidden_15_act_identity/1786626001/eval_results
+  run: 1786718775.6385477
+    total successes (from line): 20 / 44
+    total successes (from file rows): 20 / 44 (45.45%)
+    train successes: 19 / 24 (79.17%)
+    test successes: 1 / 20 (5.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 20 / 44 (45.45%)
+    total successes (from file rows): 20 / 44 (45.45%)
+    train successes: 19 / 24 (79.17%)
+    test successes: 1 / 20 (5.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_4_hidden_15_act_identity/1786632712
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_4_hidden_15_act_identity/1786632712/eval_results
+  run: 1786718837.126924
+    total successes (from line): 27 / 44
+    total successes (from file rows): 27 / 44 (61.36%)
+    train successes: 23 / 24 (95.83%)
+    test successes: 4 / 20 (20.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 27 / 44 (61.36%)
+    total successes (from file rows): 27 / 44 (61.36%)
+    train successes: 23 / 24 (95.83%)
+    test successes: 4 / 20 (20.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_4_hidden_15_act_sigmoid/1786626156
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_4_hidden_15_act_sigmoid/1786626156/eval_results
+  run: 1786718897.9710393
+    total successes (from line): 0 / 44
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 44 (0.00%)
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_4_hidden_15_act_sigmoid/1786633013
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_4_hidden_15_act_sigmoid/1786633013/eval_results
+  run: 1786718897.770818
+    total successes (from line): 1 / 44
+    total successes (from file rows): 1 / 44 (2.27%)
+    train successes: 1 / 24 (4.17%)
+    test successes: 0 / 20 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 1 / 44 (2.27%)
+    total successes (from file rows): 1 / 44 (2.27%)
+    train successes: 1 / 24 (4.17%)
+    test successes: 0 / 20 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_4_hidden_5_act_identity/1786625901
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_4_hidden_5_act_identity/1786625901/eval_results
+  run: 1786709532.3775795
+    total successes (from line): 20 / 44
+    total successes (from file rows): 20 / 44 (45.45%)
+    train successes: 19 / 24 (79.17%)
+    test successes: 1 / 20 (5.00%)
+  run: 1786718592.9914718
+    total successes (from line): 21 / 44
+    total successes (from file rows): 21 / 44 (47.73%)
+    train successes: 19 / 24 (79.17%)
+    test successes: 2 / 20 (10.00%)
+  summary
+    runs with output.log: 2
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 41 / 88 (46.59%)
+    total successes (from file rows): 41 / 88 (46.59%)
+    train successes: 38 / 48 (79.17%)
+    test successes: 3 / 40 (7.50%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_4_hidden_5_act_identity/1786629900
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_4_hidden_5_act_identity/1786629900/eval_results
+  run: 1786718592.9914129
+    total successes (from line): 19 / 44
+    total successes (from file rows): 19 / 44 (43.18%)
+    train successes: 19 / 24 (79.17%)
+    test successes: 0 / 20 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 19 / 44 (43.18%)
+    total successes (from file rows): 19 / 44 (43.18%)
+    train successes: 19 / 24 (79.17%)
+    test successes: 0 / 20 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_4_hidden_5_act_sigmoid/1786625901
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_4_hidden_5_act_sigmoid/1786625901/eval_results
+  run: 1786718623.2420166
+    total successes (from line): 0 / 44
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 44 (0.00%)
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_4_hidden_5_act_sigmoid/1786629927
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_4_hidden_5_act_sigmoid/1786629927/eval_results
+  run: 1786718654.0504515
+    total successes (from line): 3 / 44
+    total successes (from file rows): 3 / 44 (6.82%)
+    train successes: 3 / 24 (12.50%)
+    test successes: 0 / 20 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 3 / 44 (6.82%)
+    total successes (from file rows): 3 / 44 (6.82%)
+    train successes: 3 / 24 (12.50%)
+    test successes: 0 / 20 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_6_hidden_10_act_identity/1786626451
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_6_hidden_10_act_identity/1786626451/eval_results
+  run: 1786719050.314632
+    total successes (from line): 42 / 44
+    total successes (from file rows): 42 / 44 (95.45%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 18 / 20 (90.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 42 / 44 (95.45%)
+    total successes (from file rows): 42 / 44 (95.45%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 18 / 20 (90.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_6_hidden_10_act_identity/1786633945
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_6_hidden_10_act_identity/1786633945/eval_results
+  run: 1786719081.0583606
+    total successes (from line): 44 / 44
+    total successes (from file rows): 44 / 44 (100.00%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 20 / 20 (100.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 44 / 44 (100.00%)
+    total successes (from file rows): 44 / 44 (100.00%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 20 / 20 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_6_hidden_10_act_sigmoid/1786626685
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_6_hidden_10_act_sigmoid/1786626685/eval_results
+  run: 1786719142.0913186
+    total successes (from line): 0 / 44
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 44 (0.00%)
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_6_hidden_10_act_sigmoid/1786634388
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_6_hidden_10_act_sigmoid/1786634388/eval_results
+  run: 1786719172.0124953
+    total successes (from line): 0 / 44
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 44 (0.00%)
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_6_hidden_15_act_identity/1786626758
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_6_hidden_15_act_identity/1786626758/eval_results
+  run: 1786715226.9033957
+    total successes (from line): 40 / 44
+    total successes (from file rows): 40 / 44 (90.91%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 16 / 20 (80.00%)
+  run: 1786719202.7850688
+    total successes (from line): 40 / 44
+    total successes (from file rows): 40 / 44 (90.91%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 16 / 20 (80.00%)
+  summary
+    runs with output.log: 2
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 80 / 88 (90.91%)
+    total successes (from file rows): 80 / 88 (90.91%)
+    train successes: 48 / 48 (100.00%)
+    test successes: 32 / 40 (80.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_6_hidden_15_act_identity/1786634593
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_6_hidden_15_act_identity/1786634593/eval_results
+  run: 1786719355.998631
+    total successes (from line): 44 / 44
+    total successes (from file rows): 44 / 44 (100.00%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 20 / 20 (100.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 44 / 44 (100.00%)
+    total successes (from file rows): 44 / 44 (100.00%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 20 / 20 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_6_hidden_15_act_sigmoid/1786626791
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_6_hidden_15_act_sigmoid/1786626791/eval_results
+  run: 1786719447.5218258
+    total successes (from line): 0 / 44
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 44 (0.00%)
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_6_hidden_15_act_sigmoid/1786634664
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_6_hidden_15_act_sigmoid/1786634664/eval_results
+  run: 1786719477.5845768
+    total successes (from line): 0 / 44
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 44 (0.00%)
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_6_hidden_5_act_identity/1786626194
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_6_hidden_5_act_identity/1786626194/eval_results
+  run: 1786718959.0520651
+    total successes (from line): 6 / 44
+    total successes (from file rows): 6 / 44 (13.64%)
+    train successes: 6 / 24 (25.00%)
+    test successes: 0 / 20 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 6 / 44 (13.64%)
+    total successes (from file rows): 6 / 44 (13.64%)
+    train successes: 6 / 24 (25.00%)
+    test successes: 0 / 20 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_6_hidden_5_act_identity/1786633345
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_6_hidden_5_act_identity/1786633345/eval_results
+  run: 1786718958.7274573
+    total successes (from line): 44 / 44
+    total successes (from file rows): 44 / 44 (100.00%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 20 / 20 (100.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 44 / 44 (100.00%)
+    total successes (from file rows): 44 / 44 (100.00%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 20 / 20 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_6_hidden_5_act_sigmoid/1786626256
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_6_hidden_5_act_sigmoid/1786626256/eval_results
+  run: 1786719019.9160845
+    total successes (from line): 0 / 44
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 44 (0.00%)
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_6_hidden_5_act_sigmoid/1786633628
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_6_hidden_5_act_sigmoid/1786633628/eval_results
+  run: 1786719050.3145683
+    total successes (from line): 0 / 44
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 44 (0.00%)
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_8_hidden_10_act_identity/1786627368
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_8_hidden_10_act_identity/1786627368/eval_results
+  run: 1786719721.4560251
+    total successes (from line): 40 / 44
+    total successes (from file rows): 40 / 44 (90.91%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 16 / 20 (80.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 40 / 44 (90.91%)
+    total successes (from file rows): 40 / 44 (90.91%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 16 / 20 (80.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_8_hidden_10_act_identity/1786635622
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_8_hidden_10_act_identity/1786635622/eval_results
+  run: 1786719752.2652524
+    total successes (from line): 44 / 44
+    total successes (from file rows): 44 / 44 (100.00%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 20 / 20 (100.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 44 / 44 (100.00%)
+    total successes (from file rows): 44 / 44 (100.00%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 20 / 20 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_8_hidden_10_act_sigmoid/1786629729
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_8_hidden_10_act_sigmoid/1786629729/eval_results
+  run: 1786719936.016866
+    total successes (from line): 0 / 44
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 44 (0.00%)
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_8_hidden_10_act_sigmoid/1786636481
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_8_hidden_10_act_sigmoid/1786636481/eval_results
+  run: 1786719966.0232606
+    total successes (from line): 0 / 44
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 44 (0.00%)
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_8_hidden_15_act_identity/1786629806
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_8_hidden_15_act_identity/1786629806/eval_results
+  run: 1786719996.8879385
+    total successes (from line): 39 / 44
+    total successes (from file rows): 39 / 44 (88.64%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 15 / 20 (75.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 39 / 44 (88.64%)
+    total successes (from file rows): 39 / 44 (88.64%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 15 / 20 (75.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_8_hidden_15_act_identity/1786636772
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_8_hidden_15_act_identity/1786636772/eval_results
+  run: 1786719996.7474897
+    total successes (from line): 44 / 44
+    total successes (from file rows): 44 / 44 (100.00%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 20 / 20 (100.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 44 / 44 (100.00%)
+    total successes (from file rows): 44 / 44 (100.00%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 20 / 20 (100.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_8_hidden_15_act_sigmoid/1786629849
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_8_hidden_15_act_sigmoid/1786629849/eval_results
+  run: 1786720149.9101307
+    total successes (from line): 0 / 44
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 44 (0.00%)
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_8_hidden_15_act_sigmoid/1786637791
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_8_hidden_15_act_sigmoid/1786637791/eval_results
+  run: 1786720179.8998628
+    total successes (from line): 0 / 44
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 44 (0.00%)
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_8_hidden_5_act_identity/1786626855
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_8_hidden_5_act_identity/1786626855/eval_results
+  run: 1786719477.6279576
+    total successes (from line): 38 / 44
+    total successes (from file rows): 38 / 44 (86.36%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 14 / 20 (70.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 38 / 44 (86.36%)
+    total successes (from file rows): 38 / 44 (86.36%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 14 / 20 (70.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_8_hidden_5_act_identity/1786634708
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_8_hidden_5_act_identity/1786634708/eval_results
+  run: 1786719569.5109763
+    total successes (from line): 43 / 44
+    total successes (from file rows): 43 / 44 (97.73%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 19 / 20 (95.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 43 / 44 (97.73%)
+    total successes (from file rows): 43 / 44 (97.73%)
+    train successes: 24 / 24 (100.00%)
+    test successes: 19 / 20 (95.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_8_hidden_5_act_sigmoid/1786627350
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_8_hidden_5_act_sigmoid/1786627350/eval_results
+  run: 1786719691.3846974
+    total successes (from line): 0 / 44
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 44 (0.00%)
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+
+experiment: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_8_hidden_5_act_sigmoid/1786635588
+  eval_results: /work/rleap1/jan.dornhege/NDLM/outputs/NLM_OPTGP/sandbox/logistics/layers_8_hidden_5_act_sigmoid/1786635588/eval_results
+  run: 1786719722.3002691
+    total successes (from line): 0 / 44
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+  summary
+    runs with output.log: 1
+    runs missing output.log: 0
+    total successes (sum of "Total Successes" lines): 0 / 44 (0.00%)
+    total successes (from file rows): 0 / 44 (0.00%)
+    train successes: 0 / 24 (0.00%)
+    test successes: 0 / 20 (0.00%)
+
