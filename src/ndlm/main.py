@@ -79,7 +79,7 @@ def compute_pos_weight(targets, log):
         return torch.ones(0)  
     if targets[0].shape[1] == 0:
         return torch.ones(0)  
-    positive_counts = torch.zeros([targets[0].shape[1]], dtype=torch.float32)
+    positive_counts = torch.zeros([targets[0].shape[1]], dtype=torch.float32, device=targets[0].device)
     num_elements = 0
    
 
@@ -136,6 +136,21 @@ def main(train_dataset, test_dataset, config, args, model, checkpoint_path=None,
         criterion_c = nn.BCEWithLogitsLoss()
         criterion_r = nn.BCEWithLogitsLoss()
     optimizer = optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay)
+
+    lr_scheduler_name = getattr(args, "lr_scheduler", None)
+    if lr_scheduler_name in (None, "none"):
+        lr_scheduler = None
+    elif lr_scheduler_name == "plateau":
+        lr_scheduler = optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer, mode="min", factor=0.5, patience=20,
+        )
+    elif lr_scheduler_name == "cosine":
+        lr_scheduler = optim.lr_scheduler.CosineAnnealingLR(
+            optimizer, T_max=args.num_epochs,
+        )
+    else:
+        raise ValueError(f"Unknown lr_scheduler: {lr_scheduler_name!r}")
+
     final_train_res = {}
     final_test_res = {}
 
@@ -145,10 +160,10 @@ def main(train_dataset, test_dataset, config, args, model, checkpoint_path=None,
 
 
     def run_test_round(epoch_label):
-            
+        totals = [0] * 8
         model.eval()
         with torch.no_grad():
-            for i, data in enumerate(test_dataset):
+            for dataset_idx, data in enumerate(test_dataset):
                 if len(data) == 4:
                     concepts, roles, c_targets, r_targets = data
                     c_mask = torch.ones_like(c_targets, dtype=torch.bool)
@@ -167,14 +182,7 @@ def main(train_dataset, test_dataset, config, args, model, checkpoint_path=None,
                 c_targets = c_targets.to(device)
                 r_targets = r_targets.to(device)
                 
-                out_c= []
-                out_r = []
-                for i in range(concepts.shape[0]):
-                    c, r = model(concepts[i:i+1], roles[i:i+1])
-                    out_c.append(c)
-                    out_r.append(r)
-                out_concepts = torch.cat(out_c, dim=0)
-                out_roles = torch.cat(out_r, dim=0)
+                out_concepts, out_roles = model(concepts, roles)
                 # if "final" in epoch_label:
                 #     log(epoch_label)
                     # torch.set_printoptions(threshold=float('inf'))
@@ -191,14 +199,18 @@ def main(train_dataset, test_dataset, config, args, model, checkpoint_path=None,
                 c_preds = ((out_concepts > 0) & c_mask).int()
                 c_missclassifcations = ((c_preds != c_targets) & c_mask).sum().item()
                 c_correct = ((c_preds == c_targets) & c_mask).sum().item()
-                c_accuracy = ((c_preds == c_targets) & c_mask).float().mean()
+                c_accuracy = (c_preds == c_targets)[c_mask].float().mean()
                 over_estimates_c = ((c_preds > c_targets) & c_mask).sum().item()
                 under_estimates_c = ((c_preds < c_targets) & c_mask).sum().item()
 
                 r_preds = ((out_roles > 0) & r_mask).int()
                 role_missclassifcations = ((r_preds != r_targets) & r_mask).sum().item()
                 r_correct = ((r_preds == r_targets) & r_mask).sum().item()
-                r_accuracy = ((r_preds == r_targets) & r_mask).float().mean()
+                r_accuracy = (
+                    (r_preds == r_targets)[r_mask].float().mean()
+                    if r_mask.any()
+                    else torch.tensor(float("nan"), device=device)
+                )
                 over_estimates_r = ((r_preds > r_targets) & r_mask).sum().item()
                 under_estimates_r = ((r_preds < r_targets) & r_mask).sum().item()
 
@@ -210,31 +222,52 @@ def main(train_dataset, test_dataset, config, args, model, checkpoint_path=None,
                 tn_r = ((r_preds == 0) & (r_targets == 0) & r_mask).sum().item()
                 fp_r = over_estimates_r
                 fn_r = under_estimates_r
-                
-                log(f"Test Misclassifications (Dataset {i}) [{epoch_label}]: c:{c_missclassifcations}, r:{role_missclassifcations}; overc:{over_estimates_c}, underc:{under_estimates_c}; overr:{over_estimates_r}, underr:{under_estimates_r}")
-                log(f"Test Accuracy (Dataset {i}) [{epoch_label}]: c:{c_accuracy}, r:{r_accuracy}")
-                final_test_res[f"dataset_{i}"] = {"c_miss": c_missclassifcations, "r_miss": role_missclassifcations, "overc": over_estimates_c, "underc": under_estimates_c, "overr": over_estimates_r, "underr": under_estimates_r}
-                return tp_c, tn_c, fp_c, fn_c, tp_r, tn_r, fp_r, fn_r
-        model.train()
 
-    early_stop_patience = 3
+                dataset_totals = (tp_c, tn_c, fp_c, fn_c, tp_r, tn_r, fp_r, fn_r)
+                totals = [total + value for total, value in zip(totals, dataset_totals)]
+                
+                if verbose:
+                    log(f"Test Misclassifications (Dataset {dataset_idx}) [{epoch_label}]: c:{c_missclassifcations}, r:{role_missclassifcations}; overc:{over_estimates_c}, underc:{under_estimates_c}; overr:{over_estimates_r}, underr:{under_estimates_r}")
+                    log(f"Test Accuracy (Dataset {dataset_idx}) [{epoch_label}]: c:{c_accuracy}, r:{r_accuracy}")
+                final_test_res[f"dataset_{dataset_idx}"] = {"c_miss": c_missclassifcations, "r_miss": role_missclassifcations, "overc": over_estimates_c, "underc": under_estimates_c, "overr": over_estimates_r, "underr": under_estimates_r}
+            model.train()
+            log(f"Test summary [{epoch_label}]: c_miss={totals[2]+totals[3]}, r_miss={totals[6]+totals[7]} over {len(test_dataset)} datasets")
+            return tuple(totals)
+
+    early_stop_patience = 10
     zero_miss_streak = 0
-    
+    shuffle_datasets = True
+    fold_time_limit_seconds = getattr(args, "fold_time_limit_seconds", None)
+    fold_start_time = time.time()
+    verbose = getattr(args, "verbose", False)
+
     total_accs=[]
     time_stats = []
     for epoch in range(1, args.num_epochs+1):
         
-        t0=time.time()
+        epoch_start = time.time()
         epoch_total_miss = 0
+        epoch_loss_sum = 0.0
+        epoch_c_miss_total = 0
+        epoch_r_miss_total = 0
+        dataset_order = (
+            torch.randperm(len(train_dataset)).tolist()
+            if shuffle_datasets
+            else list(range(len(train_dataset)))
+        )
 
         # Iterate over datasets (dataset is a tuple of (concepts, roles, c_targets, r_targets), such that instances within the datasets have the same number of objects)
-        for ds_idx, data in enumerate(train_dataset):
+        for ds_idx in dataset_order:
+            data = train_dataset[ds_idx]
+            dataset_start = time.time()
             if len(data) == 4:
                 concepts, roles, c_targets, r_targets = data
                 c_mask = torch.ones_like(c_targets, dtype=torch.bool)
                 r_mask = torch.ones_like(r_targets, dtype=torch.bool)
             elif len(data) == 6:
                 concepts, roles, c_targets, r_targets, c_mask, r_mask = data
+            else:
+                raise ValueError(f"Unexpected data length: {len(data)}")
             
                     
             accs=[]
@@ -246,16 +279,16 @@ def main(train_dataset, test_dataset, config, args, model, checkpoint_path=None,
             num_samples = concepts.shape[0]
             perm = torch.randperm(num_samples)
 
-            if c_targets.numel() != 0:
+            # if c_targets.numel() != 0:
                 # log(f"c_targets shape: {c_targets.shape}")
                 # log(f"c_targets max: {c_targets.max()}")
-                if c_targets.max() == 0:
-                    log(f"All c_targets are zero for dataset {ds_idx}. This should not happen.")
-            if r_targets.numel() != 0:
+                # if c_targets.max() == 0:
+                    # log(f"All c_targets are zero for dataset {ds_idx}. This should not happen.")
+            # if r_targets.numel() != 0:
                 # log(f"r_targets shape: {r_targets.shape}")
                 # log(f"r_targets max: {r_targets.max()}")
-                if r_targets.max() == 0:
-                    log(f"All r_targets are zero for dataset {ds_idx}. This should not happen.")
+                # if r_targets.max() == 0:
+                    # log(f"All r_targets are zero for dataset {ds_idx}. This should not happen.")
             
             # Go in batches through the dataset with random order
             for i in range(0, num_samples, batch_size):
@@ -272,17 +305,27 @@ def main(train_dataset, test_dataset, config, args, model, checkpoint_path=None,
                 c_loss = F.binary_cross_entropy_with_logits(
                     out_concepts,
                     c_targets_batch.float(),
+                    pos_weight=pos_weight_c if args.weighted_loss else None,
                     reduction="none"
                 )
 
                 r_loss = F.binary_cross_entropy_with_logits(
                     out_roles,
                     r_targets_batch.float(),
+                    pos_weight=pos_weight_r if args.weighted_loss else None,
                     reduction="none"
                 )
 
-                c_loss = c_loss[c_mask_batch].mean()
-                r_loss = r_loss[r_mask_batch].mean()
+                c_loss = (
+                    c_loss[c_mask_batch].mean()
+                    if c_mask_batch.any()
+                    else out_concepts.sum() * 0.0
+                )
+                r_loss = (
+                    r_loss[r_mask_batch].mean()
+                    if r_mask_batch.any()
+                    else out_roles.sum() * 0.0
+                )
 
                 loss = c_loss + r_loss
 
@@ -292,33 +335,37 @@ def main(train_dataset, test_dataset, config, args, model, checkpoint_path=None,
                 optimizer.step()
 
                 # Add loss to average loss for whole dataset
-                avg_loss += loss/(num_samples)
+                avg_loss += loss.item() * len(idx)
 
                 
                 
                 # Missclassifications are computed by thresholding the outputs at 0.5 and comparing to targets
                 c_preds = (out_concepts > 0).int()
 
-                c_correct = (c_preds == c_targets)
-                c_incorrect = (c_preds != c_targets)
+                c_correct = (c_preds == c_targets_batch)
+                c_incorrect = (c_preds != c_targets_batch)
 
-                c_missclassifcations = c_incorrect[c_mask].sum().item()
-                c_accuracy = c_correct[c_mask].float().mean()
+                c_missclassifcations = c_incorrect[c_mask_batch].sum().item()
+                c_accuracy = c_correct[c_mask_batch].float().mean()
 
-                over_estimates_c = ((c_preds > c_targets) & c_mask).sum().item()
-                under_estimates_c = ((c_preds < c_targets) & c_mask).sum().item()
+                over_estimates_c = ((c_preds > c_targets_batch) & c_mask_batch).sum().item()
+                under_estimates_c = ((c_preds < c_targets_batch) & c_mask_batch).sum().item()
 
 
                 r_preds = (out_roles > 0).int()
 
-                r_correct = (r_preds == r_targets)
-                r_incorrect = (r_preds != r_targets)
+                r_correct = (r_preds == r_targets_batch)
+                r_incorrect = (r_preds != r_targets_batch)
 
-                r_missclassifications = r_incorrect[r_mask].sum().item()
-                r_accuracy = r_correct[r_mask].float().mean()
+                r_missclassifications = r_incorrect[r_mask_batch].sum().item()
+                r_accuracy = (
+                    r_correct[r_mask_batch].float().mean()
+                    if r_mask_batch.any()
+                    else torch.tensor(float("nan"), device=device)
+                )
 
-                over_estimates_r = ((r_preds > r_targets) & r_mask).sum().item()
-                under_estimates_r = ((r_preds < r_targets) & r_mask).sum().item()
+                over_estimates_r = ((r_preds > r_targets_batch) & r_mask_batch).sum().item()
+                under_estimates_r = ((r_preds < r_targets_batch) & r_mask_batch).sum().item()
                                 
                 # if r_missclassifcations >= 1:
                 #     log(f"Missclassifications in concepts: {r_missclassifcations} out of {r_targets_batch.numel()} samples.")
@@ -332,15 +379,33 @@ def main(train_dataset, test_dataset, config, args, model, checkpoint_path=None,
                 over.append((over_estimates_c, over_estimates_r))
                 under.append((under_estimates_c, under_estimates_r))
 
-            log(f"Epoch {epoch:4d} (Dataset {ds_idx}) | Average Accuracy: {(sum([i[0] for i in accs])/len(accs)).item(), (sum([i[1] for i in accs])/len(accs)).item()}")
-            log(f"           | Total Misclassifications: {(sum([i[0] for i in miss]), sum([i[1] for i in miss]))}, over: {(sum([i[0] for i in over]), sum([i[1] for i in over]))}, under: {(sum([i[0] for i in under]), sum([i[1] for i in under]))}")
-            log(f"           | Loss: {avg_loss:.4f}")
-            log(f"           | Time taken: {time.time()-t0:.4f} seconds")
-            final_train_res[f"dataset_{ds_idx}"] = {"c_miss": c_missclassifcations, "r_miss": r_missclassifications, "overc": over_estimates_c, "underc": under_estimates_c, "overr": over_estimates_r, "underr": under_estimates_r}
+            avg_loss /= num_samples
+            epoch_loss_sum += avg_loss
+            epoch_c_miss_total += sum(i[0] for i in miss)
+            epoch_r_miss_total += sum(i[1] for i in miss)
+            if verbose:
+                log(f"Epoch {epoch:4d} (Dataset {ds_idx}) | Average Accuracy: {(sum([i[0] for i in accs])/len(accs)).item(), (sum([i[1] for i in accs])/len(accs)).item()}")
+                log(f"           | Total Misclassifications: {(sum([i[0] for i in miss]), sum([i[1] for i in miss]))}, over: {(sum([i[0] for i in over]), sum([i[1] for i in over]))}, under: {(sum([i[0] for i in under]), sum([i[1] for i in under]))}")
+                log(f"           | Loss: {avg_loss:.4f}")
+                log(f"           | Time taken: {time.time()-dataset_start:.4f} seconds")
+            final_train_res[f"dataset_{ds_idx}"] = {"c_miss": sum(i[0] for i in miss), "r_miss": sum(i[1] for i in miss), "overc": sum(i[0] for i in over), "underc": sum(i[0] for i in under), "overr": sum(i[1] for i in over), "underr": sum(i[1] for i in under)}
             epoch_total_miss += sum(i[0] for i in miss) + sum(i[1] for i in miss)
 
             
-        time_stats.append(time.time()-t0)
+        epoch_time = time.time() - epoch_start
+        time_stats.append(epoch_time)
+        num_datasets = len(train_dataset)
+        epoch_avg_loss = epoch_loss_sum / num_datasets
+        log(
+            f"Epoch {epoch:4d} | Total time taken: {epoch_time:.4f} seconds | "
+            f"avg_loss={epoch_avg_loss:.4f} | "
+            f"miss(c,r)=({epoch_c_miss_total},{epoch_r_miss_total})"
+        )
+        if lr_scheduler is not None:
+            if lr_scheduler_name == "plateau":
+                lr_scheduler.step(epoch_avg_loss)
+            else:
+                lr_scheduler.step()
         total_accs.append((sum([i[0] for i in accs])/len(accs), sum([i[1] for i in accs])/len(accs)))
 
         if epoch_total_miss == 0:
@@ -358,10 +423,17 @@ def main(train_dataset, test_dataset, config, args, model, checkpoint_path=None,
             tp_c, tn_c, fp_c, fn_c, tp_r, tn_r, fp_r, fn_r = run_test_round(f"epoch {epoch} (final)")
             return tp_c, tn_c, fp_c, fn_c, tp_r, tn_r, fp_r, fn_r
 
-        if epoch % args.test_interval == 0:
-            # ------------------------------
-            # Test outputs
-            # ------------------------------
+        if fold_time_limit_seconds is not None and time.time() - fold_start_time >= fold_time_limit_seconds:
+            log(f"Stopping at epoch {epoch}: fold time limit of {fold_time_limit_seconds} seconds reached.")
+            log("Running one additional test round before stopping.")
+            if checkpoint_path is not None:
+                os.makedirs(checkpoint_path, exist_ok=True)
+                torch.save(model.state_dict(), Path(checkpoint_path)/f"checkpoint_final.pt")
+                log(f"Saved final model checkpoint to {Path(checkpoint_path)/f'checkpoint_final.pt'}")
+            tp_c, tn_c, fp_c, fn_c, tp_r, tn_r, fp_r, fn_r = run_test_round(f"epoch {epoch} (final, time limit)")
+            return tp_c, tn_c, fp_c, fn_c, tp_r, tn_r, fp_r, fn_r
+
+        if args.test_interval > 0 and epoch % args.test_interval == 0:
             tp_c, tn_c, fp_c, fn_c, tp_r, tn_r, fp_r, fn_r = run_test_round(f"epoch {epoch}")
             
             # Log Model Checkpoint
@@ -370,4 +442,9 @@ def main(train_dataset, test_dataset, config, args, model, checkpoint_path=None,
                 torch.save(model.state_dict(), Path(checkpoint_path)/f"checkpoint_intermediate.pt")
                 log(f"Saved model checkpoint to {Path(checkpoint_path)/f'checkpoint_intermediate.pt'}")
     
-    return tp_c, tn_c, fp_c, fn_c, tp_r, tn_r, fp_r, fn_r
+    if checkpoint_path is not None:
+        os.makedirs(checkpoint_path, exist_ok=True)
+        torch.save(model.state_dict(), Path(checkpoint_path)/"checkpoint_final.pt")
+        log(f"Saved final model checkpoint to {Path(checkpoint_path)/'checkpoint_final.pt'}")
+
+    return run_test_round(f"epoch {args.num_epochs} (final)")

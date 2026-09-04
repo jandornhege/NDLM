@@ -255,7 +255,7 @@ for lp_idx, t in enumerate(targets):
         # Train and evaluate
         # ====================================================
 
-        tp, fp, tn, fn, _, _, _, _ = NDLM_main.main(
+        tp, tn, fp, fn, _, _, _, _ = NDLM_main.main(
             train,
             test,
             config,

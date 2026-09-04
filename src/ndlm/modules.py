@@ -125,36 +125,62 @@ class RRAttention(nn.Module):
         return scores
 
 class RRMinMaxAttention(nn.Module):
-    def __init__(self):
+    """Role-role min-max composition: scores[i,j,o1,o2] = max/min_k roles[i,o1,k]*roles[j,k,o2].
+
+    The reduction over the intermediate-object dimension `k` can be done
+    in one fully vectorized step (fastest, needs a (b,r,r,o,o,chunk)
+    tensor with chunk=num_objects) or by iterating over `k` in smaller
+    chunks (the original behavior, chunk=1) to bound peak memory.
+    `chunk_bytes` picks the largest chunk that keeps that intermediate
+    tensor under the given byte budget; pass `chunk_bytes=None` to
+    always process all of `k` in a single step regardless of size, or a
+    small value to fall back to the original per-`k` iteration.
+    """
+
+    def __init__(self, chunk_bytes=256 * 2**20):
         super().__init__()
+        if chunk_bytes is not None and chunk_bytes <= 0:
+            raise ValueError("chunk_bytes must be positive or None")
+        self.chunk_bytes = chunk_bytes
+
+    def _chunk_size(self, b, r, o, element_size):
+        if o == 0:
+            return 1
+        if self.chunk_bytes is None:
+            return o
+        bytes_per_k = b * r * r * o * o * element_size
+        if bytes_per_k <= 0:
+            return o
+        return max(1, min(o, self.chunk_bytes // bytes_per_k))
+
     def forward(self, roles):
         # roles: (b, num_roles, num_objects, num_objects)
-        roles_T = roles.transpose(2, 3)
-
         b, r, o, k = roles.shape
+        chunk_size = self._chunk_size(b, r, o, roles.element_size())
 
-        #memory efficient computation
-        max_scores = torch.full((b, r, r, o, o), -torch.inf, device=roles.device)
-        min_scores = torch.full((b, r, r, o, o), torch.inf, device=roles.device)
+        max_scores = torch.full((b, r, r, o, o), -torch.inf, device=roles.device, dtype=roles.dtype)
+        min_scores = torch.full((b, r, r, o, o), torch.inf, device=roles.device, dtype=roles.dtype)
 
-        for kk in range(k):
-            left  = roles[:, :, :, kk]        # [b, r, o]
-            right = roles[:, :, kk, :]        # [b, r, o]
+        for start in range(0, k, chunk_size):
+            end = min(start + chunk_size, k)
 
-            prod = left[:, :, None, :, None] * right[:, None, :, None, :]  # [b,r,r,o,o]
+            left = roles[:, :, None, :, None, start:end]                              # [b, r(i), 1, o1, 1, chunk]
+            right = roles[:, :, start:end, :].transpose(2, 3)[:, None, :, None, :, :]  # [b, 1, r(j), 1, o2, chunk]
 
-            max_scores = torch.maximum(max_scores, prod)
-            min_scores = torch.minimum(min_scores, prod)
+            prod = left * right  # [b, r, r, o1, o2, chunk]
 
-            
+            max_scores = torch.maximum(max_scores, prod.max(dim=-1).values)
+            min_scores = torch.minimum(min_scores, prod.min(dim=-1).values)
+
         # combine min and max aggregation results
-        scores = torch.cat([max_scores, min_scores], dim=1) 
+        scores = torch.cat([max_scores, min_scores], dim=1)
 
         #reshape to (b, 2*r*r, o, o)
         b, r1, r2, o, _ = scores.shape
 
-        scores = scores.reshape(b, 2 * roles.shape[1] * roles.shape[1], o, o)  # [b, 2*r*r, o, o]
+        scores = scores.reshape(b, 2 * r * r, o, o)  # [b, 2*r*r, o, o]
         # append transposed roles
+        roles_T = roles.transpose(2, 3)
         scores = torch.cat([scores, roles_T], dim=1)  # final shape: [b, 2*r*r + r, o, o]
 
         return scores
@@ -374,7 +400,9 @@ class Strict_Layer(nn.Module):
     
         # Initialize Stage 1 operations with min-max variants
         self.CRA = CRMinMaxAttention()
-        self.RRA = RRMinMaxAttention()
+        self.RRA = RRMinMaxAttention(
+            chunk_bytes=getattr(config, "STRICT_RR_CHUNK_BYTES", 256 * 2**20)
+        )
         self.RAgg = RoleMinMaxAggregation()
         self.CExt = ConceptExtensionDouble()
         self.TC = transitiveClosureMinMax_agg()

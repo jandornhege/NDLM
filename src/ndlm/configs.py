@@ -41,7 +41,15 @@ class config_object:
         self.RESIDUAL = False
         self.INPUT_RESIDUAL = False
         self.INITIAL_FFN = False
-        self.STRICT_RR_CHUNK_BYTES = 2 * 2**30
+        # Memory budget for Strict_Layer's role-role min-max attention.
+        # Larger values compute more of the reduction in one vectorized
+        # step (faster); set lower (e.g. near the per-k tensor size) to
+        # fall back toward the original per-k iteration; None means
+        # always compute in a single step regardless of memory use.
+        # 512 MiB comfortably covers a single step up to ~180 objects at
+        # 10 hidden roles, while leaving headroom for the CUDA context
+        # and other tensors when training on a fractional GPU shard.
+        self.STRICT_RR_CHUNK_BYTES = 512 * 2**20
 
         # self.NLM_RESIDUAL = True
         # self.NLM_EXCLUDE_SELF = True

@@ -11,6 +11,7 @@ import os
 import torch
 
 from difflogic.nn.neural_logic import layer
+from tasks.owl_parser.owl_tensor_parser import owl_to_tensors
 
 
 DEFAULT_DATA_ROOT = Path(__file__).resolve().parents[3] / "src" / "data" / "Ontolearn"
@@ -135,6 +136,158 @@ def load_lp_target(payload: dict, lp_path: Path):
             }
         )
     return targets
+
+def load_lp_examples(lp_path: Path):
+    with lp_path.open("r", encoding="utf-8") as handle:
+        raw = json.load(handle)
+
+    problems = iter_lp_problems(raw)
+
+    res = {}
+
+    for problem_index, problem in enumerate(problems):
+        examples = []
+        if not isinstance(problem, dict):
+            continue
+
+        lp_name = problem.get(
+            "target expression",
+            f"{lp_path.stem}_{problem_index}",
+        )
+
+        problem_examples = problem.get("examples", {})
+
+        positives = problem_examples.get(
+            "positive_examples",
+            problem_examples.get("positive examples", []),
+        )
+
+        negatives = problem_examples.get(
+            "negative_examples",
+            problem_examples.get("negative examples", []),
+        )
+
+        for i, example in enumerate(positives):
+            examples.append({
+                "name": f"{lp_name}_positive_{i}",
+                "center": normalize_rdf_term(example),
+                "label": 1,
+            })
+
+        for i, example in enumerate(negatives):
+            examples.append({
+                "name": f"{lp_name}_negative_{i}",
+                "center": normalize_rdf_term(example),
+                "label": 0,
+            })
+        res[lp_name] = examples
+
+    return res
+
+def make_learning_problem(
+    owl_files,
+    center,
+    label,
+    *,
+    name=None,
+    radius=0,
+    mark_target_object=False,
+    mark_target_object_keep_mask=False,
+):
+    """
+    Create one learning problem centered on a single example.
+
+    The input graph is restricted to the local neighborhood of `center`.
+    The target/mask contain exactly one supervised object: `center`, unless
+    `mark_target_object` is set and `mark_target_object_keep_mask` is not,
+    in which case every object in the neighborhood is supervised.
+
+    Returned tensor shapes (`num_objects` = number of objects in the local
+    neighborhood, `num_concepts` = number of concept names in the ontology):
+      - `concepts`: (num_concepts, num_objects) float, or
+        (num_concepts + 1, num_objects) if `mark_target_object` is set, with
+        the extra last row one-hot at `center_index`.
+      - `roles`: (num_roles, num_objects, num_objects) float.
+      - `target`/`mask`: (num_objects,) float/bool, both fully populated when
+        `mark_target_object` is set without `mark_target_object_keep_mask`,
+        otherwise only set at `center_index`.
+      - `role_target`/`role_mask`: (0, num_objects, num_objects), unused.
+    """
+
+    # Generate the local KG around this example
+    payload = owl_to_tensors(
+        owl_files,
+        neighborhood_node=center,
+        neighborhood_distance=radius,
+    )
+
+    # The center must be present in the local graph
+    if center not in payload.object_index:
+        raise ValueError(
+            f"Center {center!r} was not found in the local tensor."
+        )
+
+    center_index = payload.object_index[center]
+    num_objects = payload.concepts.shape[1]
+    concepts = payload.concepts
+
+    if mark_target_object:
+        target_concept = torch.zeros(
+            (1, num_objects),
+            dtype=payload.concepts.dtype,
+        )
+        target_concept[0, center_index] = 1.0
+        concepts = torch.cat((payload.concepts, target_concept), dim=0)
+
+    target = torch.zeros(
+        num_objects,
+        dtype=torch.float32,
+    )
+
+    mask = torch.zeros(
+        num_objects,
+        dtype=torch.bool,
+    )
+
+    if mark_target_object and not mark_target_object_keep_mask:
+        target.fill_(float(label))
+        mask.fill_(True)
+    else:
+        target[center_index] = float(label)
+        mask[center_index] = True
+
+    # No role learning
+    role_target = torch.zeros(
+        (0, num_objects, num_objects),
+        dtype=torch.float32,
+    )
+
+    role_mask = torch.zeros(
+        (0, num_objects, num_objects),
+        dtype=torch.bool,
+    )
+
+    return {
+        "name": name or str(center),
+        "center": center,
+        "label": int(label),
+        "center_index": center_index,
+
+        "concepts": concepts,
+        "roles": payload.roles,
+
+        "target": target,
+        "mask": mask,
+
+        "role_target": role_target,
+        "role_mask": role_mask,
+
+        # Keep the metadata in case you need it later
+        "object_terms": payload.object_terms,
+        "concept_names": payload.concept_names,
+        "role_names": payload.role_names,
+        "object_index": payload.object_index,
+    }
 
 
 def benchmark_single_inference(
@@ -334,4 +487,59 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+   
+    lp_path= Path("src/data/Ontolearn/LPs/Family/lps_difficult.json")
+    # Load the examples produced by Step 2
+    examples = load_lp_examples(lp_path)
+
+    # Pick one example
+    example = examples[0]
+
+    print("Example:")
+    print(example)
+
+    # Create its local learning problem
+    problem = make_learning_problem(
+        owl_files=(
+            "src/data/Ontolearn/KGs/Family/family-benchmark_rich_background.owl",
+            # "src/data/Ontolearn/KGs/Family/father.owl"
+        ),
+        center=example["center"],
+        label=example["label"],
+        name=example["name"],
+
+        radius=5,
+    )
+    print(problem["concept_names"])
+    print(problem["role_names"])
+
+    print("\nLearning problem:")
+    print("name:", problem["name"])
+    print("center:", problem["center"])
+    print("label:", problem["label"])
+
+    print("\nTensor shapes:")
+    print("concepts:", problem["concepts"].shape)
+    print("roles:", problem["roles"].shape)
+
+    print("\nCenter:")
+    print("center index:", problem["center_index"])
+    print(
+        "center term:",
+        problem["object_terms"][problem["center_index"]],
+    )
+
+    print("\nTarget:")
+    print(problem["target"])
+
+    print("\nMask:")
+    print(problem["mask"])
+
+    # Sanity checks
+    assert problem["mask"].sum().item() == 1
+    assert problem["mask"][problem["center_index"]]
+    assert problem["target"][problem["center_index"]].item() == example["label"]
+
+    print("\nNumber of local objects:", problem["concepts"].shape[1])
+    print("Number of supervised objects:", problem["mask"].sum().item())

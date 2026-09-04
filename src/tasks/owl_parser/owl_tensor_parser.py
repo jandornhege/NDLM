@@ -2,6 +2,7 @@
 
 from collections.abc import Iterable
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 from typing import Union
 
@@ -38,6 +39,70 @@ class OwlTensorData:
     concept_index: dict[str, int]
     role_index: dict[str, int]
 
+def local_neighborhood(
+    graph: Graph,
+    start: Node,
+    distance: int = 4,
+) -> set[Node]:
+    """Return all nodes within `distance` RDF edges of `start`."""
+
+    visited = {start}
+    frontier = {start}
+
+    for _ in range(distance):
+        next_frontier = set()
+
+        for node in frontier:
+            # Outgoing edges: node -> object
+            for _, predicate, obj in graph.triples((node, None, None)):
+                if predicate == RDF.type:
+                    continue
+                if obj not in visited:
+                    next_frontier.add(obj)
+
+            # Incoming edges: subject -> node
+            for subject, predicate, _ in graph.triples((None, None, node)):
+                if predicate == RDF.type:
+                    continue
+
+                if subject not in visited:
+                    next_frontier.add(subject)
+
+        visited.update(next_frontier)
+        frontier = next_frontier
+
+        if not frontier:
+            break
+
+    return visited
+
+
+@lru_cache(maxsize=8)
+def _load_canonical_graph(paths: tuple[Path, ...]) -> Graph:
+    """Parse and canonicalize an OWL graph once and reuse it across calls.
+
+    `owl_to_tensors` is invoked once per example, but the underlying
+    ontology is identical across examples, so parsing and canonicalizing
+    it from disk every time is redundant. The returned graph is only
+    ever read from (never mutated) by callers.
+    """
+
+    graph = Graph()
+
+    for path in paths:
+        if not path.is_file():
+            raise FileNotFoundError(path)
+
+        suffix = path.suffix.lower()
+
+        if suffix == ".ttl":
+            graph.parse(path, format="turtle")
+        elif suffix == ".txt":
+            graph.parse(path, format="nt")
+        else:
+            graph.parse(path)
+    return to_canonical_graph(graph)
+
 
 def owl_to_tensors(
     owl_files: Union[PathInput, Iterable[PathInput]],
@@ -46,23 +111,31 @@ def owl_to_tensors(
     export_path: PathInput | None = None,
     max_role_tensor_bytes: int | None = None,
     include_non_iri_terms: bool = False,
+    neighborhood_node: Node | str | None = None,
+    neighborhood_distance: int = 4,
 ) -> OwlTensorData:
     """Parse RDF/XML OWL files into binary concept vectors and role matrices.
 
-    Pass every ontology file that should be part of the same graph, for example
-    both ``NTNames.owl.xml`` and ``NTN-individuals.owl.xml``. RDF imports are
-    not fetched from the network; this keeps parsing deterministic and lets the
-    caller choose exactly which local ontologies are included. By default,
-    literals and blank nodes are excluded from the object dimension; set
-    ``include_non_iri_terms`` to retain the lossless RDF-term encoding. When
-    ``export_path`` is supplied, the tensors and their name/index metadata are
-    written together with ``torch.save``. ``max_role_tensor_bytes`` rejects a
-    dense role tensor before allocating it.
+    If ``neighborhood_node`` is supplied, only objects within
+    ``neighborhood_distance`` role edges of that node are included.
+
+    The concept and role vocabularies are always computed from the
+    complete graph before neighborhood filtering. Therefore, their
+    ordering and dimensionality remain fixed across local neighborhoods.
     """
+
     if padding < 0:
         raise ValueError("padding must be non-negative")
+
     if max_role_tensor_bytes is not None and max_role_tensor_bytes < 0:
         raise ValueError("max_role_tensor_bytes must be non-negative")
+
+    if neighborhood_distance < 0:
+        raise ValueError("neighborhood_distance must be non-negative")
+
+    # ---------------------------------------------------------
+    # Resolve input paths
+    # ---------------------------------------------------------
 
     if isinstance(owl_files, (str, Path)):
         paths = (Path(owl_files),)
@@ -72,15 +145,127 @@ def owl_to_tensors(
     if not paths:
         raise ValueError("at least one OWL file is required")
 
-    graph = Graph()
-    for path in paths:
-        if not path.is_file():
-            raise FileNotFoundError(path)
-        graph.parse(path, format="xml")
+    # ---------------------------------------------------------
+    # Load complete RDF graph
+    # ---------------------------------------------------------
 
-    graph = to_canonical_graph(graph)
+    graph = _load_canonical_graph(paths)
+
+    # ---------------------------------------------------------
+    # Helper
+    # ---------------------------------------------------------
+
     def keep_object(term: Node) -> bool:
-        return include_non_iri_terms or isinstance(term, URIRef)
+        return (
+            include_non_iri_terms
+            or isinstance(term, URIRef)
+        )
+
+    # ---------------------------------------------------------
+    # GLOBAL concept / role vocabulary
+    #
+    # IMPORTANT:
+    # These are computed BEFORE local-neighborhood filtering.
+    # Thus every local graph has the same concept and role
+    # dimensions and the same ordering.
+    # ---------------------------------------------------------
+
+    concept_terms = {
+        obj
+        for subject, predicate, obj in graph
+        if predicate == RDF.type
+        and keep_object(subject)
+        and keep_object(obj)
+    }
+
+    role_terms = {
+        predicate
+        for subject, predicate, obj in graph
+        if predicate != RDF.type
+        and keep_object(subject)
+        and keep_object(obj)
+    }
+
+    ordered_concepts = tuple(
+        sorted(concept_terms, key=rdf_term_id)
+    )
+
+    ordered_roles = tuple(
+        sorted(role_terms, key=rdf_term_id)
+    )
+
+    concept_names = tuple(
+        rdf_term_id(term)
+        for term in ordered_concepts
+    )
+
+    role_names = tuple(
+        rdf_term_id(term)
+        for term in ordered_roles
+    )
+
+    # ---------------------------------------------------------
+    # Filter graph to local neighborhood
+    # ---------------------------------------------------------
+
+    if neighborhood_node is not None:
+
+        if isinstance(neighborhood_node, str):
+            neighborhood_node = URIRef(
+                neighborhood_node.strip("<>")
+            )
+
+        if neighborhood_node not in graph.all_nodes():
+            raise ValueError(
+                "neighborhood node not found in graph: "
+                f"{neighborhood_node}"
+            )
+
+        neighborhood = local_neighborhood(
+            graph,
+            neighborhood_node,
+            distance=neighborhood_distance,
+        )
+
+        filtered_graph = Graph()
+
+        for subject, predicate, obj in graph:
+
+            # -------------------------------------------------
+            # Role edges:
+            # Keep only edges completely inside neighborhood.
+            # -------------------------------------------------
+
+            if predicate != RDF.type:
+                if (
+                    subject in neighborhood
+                    and obj in neighborhood
+                ):
+                    filtered_graph.add(
+                        (subject, predicate, obj)
+                    )
+
+            # -------------------------------------------------
+            # rdf:type:
+            #
+            # Keep type assertions for local individuals even
+            # if the class itself is not in the neighborhood.
+            # -------------------------------------------------
+
+            else:
+                if subject in neighborhood:
+                    filtered_graph.add(
+                        (subject, predicate, obj)
+                    )
+
+        graph = filtered_graph
+
+    # ---------------------------------------------------------
+    # Determine LOCAL object vocabulary
+    #
+    # Unlike concepts and roles, objects are allowed to differ
+    # between neighborhoods.
+    # ---------------------------------------------------------
 
     terms = {
         term
@@ -88,57 +273,121 @@ def owl_to_tensors(
         for term in (subject, obj)
         if keep_object(term)
     }
-    concept_terms = {
-        obj
-        for subject, predicate, obj in graph
-        if predicate == RDF.type and keep_object(subject) and keep_object(obj)
-    }
-    role_terms = {
-        predicate
-        for subject, predicate, obj in graph
-        if predicate != RDF.type and keep_object(subject) and keep_object(obj)
+
+    ordered_terms = tuple(
+        sorted(terms, key=rdf_term_id)
+    )
+
+    object_terms = tuple(
+        rdf_term_id(term)
+        for term in ordered_terms
+    )
+
+    # ---------------------------------------------------------
+    # Indices
+    # ---------------------------------------------------------
+
+    object_index = {
+        term: index
+        for index, term in enumerate(object_terms)
     }
 
-    ordered_terms = tuple(sorted(terms, key=rdf_term_id))
-    ordered_concepts = tuple(sorted(concept_terms, key=rdf_term_id))
-    ordered_roles = tuple(sorted(role_terms, key=rdf_term_id))
+    concept_index = {
+        name: index
+        for index, name in enumerate(concept_names)
+    }
 
-    object_terms = tuple(rdf_term_id(term) for term in ordered_terms)
-    concept_names = tuple(rdf_term_id(term) for term in ordered_concepts)
-    role_names = tuple(rdf_term_id(term) for term in ordered_roles)
-    object_index = {term: index for index, term in enumerate(object_terms)}
-    concept_index = {term: index for index, term in enumerate(concept_names)}
-    role_index = {term: index for index, term in enumerate(role_names)}
+    role_index = {
+        name: index
+        for index, name in enumerate(role_names)
+    }
+
+    # ---------------------------------------------------------
+    # Tensor dimensions
+    # ---------------------------------------------------------
 
     num_objects = len(ordered_terms) + padding
-    role_tensor_bytes = len(ordered_roles) * num_objects * num_objects * 4
+
+    role_tensor_bytes = (
+        len(ordered_roles)
+        * num_objects
+        * num_objects
+        * 4
+    )
+
     if (
         max_role_tensor_bytes is not None
         and role_tensor_bytes > max_role_tensor_bytes
     ):
         raise MemoryError(
             "dense role tensor requires "
-            f"{role_tensor_bytes / 2**30:.2f} GiB, exceeding the "
+            f"{role_tensor_bytes / 2**30:.2f} GiB, "
+            "exceeding the "
             f"{max_role_tensor_bytes / 2**30:.2f} GiB limit"
         )
-    concepts = torch.zeros((len(ordered_concepts), num_objects), dtype=torch.float32)
-    roles = torch.zeros(
-        (len(ordered_roles), num_objects, num_objects), dtype=torch.float32
+
+    # ---------------------------------------------------------
+    # Allocate tensors
+    #
+    # IMPORTANT:
+    # len(ordered_concepts) and len(ordered_roles) are GLOBAL.
+    # Therefore these dimensions remain fixed.
+    # ---------------------------------------------------------
+
+    concepts = torch.zeros(
+        (len(ordered_concepts), num_objects),
+        dtype=torch.float32,
     )
 
+    roles = torch.zeros(
+        (len(ordered_roles), num_objects, num_objects),
+        dtype=torch.float32,
+    )
+
+    # ---------------------------------------------------------
+    # Fill tensors
+    # ---------------------------------------------------------
+
     for subject, predicate, obj in graph:
+
         subject_id = rdf_term_id(subject)
         object_id = rdf_term_id(obj)
-        if subject_id not in object_index or object_id not in object_index:
+
+        if (
+            subject_id not in object_index
+            or object_id not in object_index
+        ):
             continue
+
         subject_index = object_index[subject_id]
         object_index_value = object_index[object_id]
+
         if predicate == RDF.type:
-            concepts[concept_index[rdf_term_id(obj)], subject_index] = 1.0
-        else:
-            roles[
-                role_index[rdf_term_id(predicate)], subject_index, object_index_value
+
+            concept_id = rdf_term_id(obj)
+
+            # Should always exist because concept_names came
+            # from the complete graph.
+            concepts[
+                concept_index[concept_id],
+                subject_index,
             ] = 1.0
+
+        else:
+
+            role_id = rdf_term_id(predicate)
+
+            # Should always exist because role_names came
+            # from the complete graph.
+            roles[
+                role_index[role_id],
+                subject_index,
+                object_index_value,
+            ] = 1.0
+
+    # ---------------------------------------------------------
+    # Package result
+    # ---------------------------------------------------------
 
     tensor_data = OwlTensorData(
         concepts=concepts,
@@ -151,9 +400,17 @@ def owl_to_tensors(
         role_index=role_index,
     )
 
+    # ---------------------------------------------------------
+    # Optional export
+    # ---------------------------------------------------------
+
     if export_path is not None:
         output_path = Path(export_path)
-        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.parent.mkdir(
+            parents=True,
+            exist_ok=True,
+        )
+
         torch.save(
             {
                 "concepts": tensor_data.concepts,

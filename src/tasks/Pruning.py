@@ -478,8 +478,10 @@ def prune_model(checkpoint_args, exp_args, config, datasets):
     return prune_results
 
 
-def model_to_verbal_description(model, action_name):
-    
+def model_to_verbal_description(model, action_name, names=None):
+    """`names` overrides the built-in blocks-world naming with a dict holding
+    the keys 'c', 'r', 'c_out' and 'r_out'."""
+
     per_action_name ={
         "unstack": {
             'c': ['clear', 'handempty', 'holding', 'number', 'object', 'ontable', 'arg_0'], 
@@ -534,8 +536,11 @@ def model_to_verbal_description(model, action_name):
             "r_out": ["on_add", "on_del"],
         }
     }
-    input_concept_names = per_action_name[action_name]['c']
-    input_role_names = per_action_name[action_name]['r']
+    if names is None:
+        names = per_action_name[action_name]
+
+    input_concept_names = names['c']
+    input_role_names = names['r']
 
 
     def stage_1_concept_map(in_concept_names, in_role_names, out_index, tc):
@@ -658,17 +663,17 @@ def model_to_verbal_description(model, action_name):
         concept_descriptions = stringify_weight(layer_concept_weight, layer_concept_bias, intermediate_concept_names, c_or_r="c", zero_status_in=local_zero_status_c)
         role_descriptions = stringify_weight(layer_role_weight, layer_role_bias, intermediate_role_names, c_or_r="r", zero_status_in=local_zero_status_r)
         for i, (desc, is_zero) in enumerate(concept_descriptions):
-            name = f"C_{layer_index}_{i}" if layer_index < config.NUM_LAYERS-1 else per_action_name[action_name]["c_out"][i]
+            name = f"C_{layer_index}_{i}" if layer_index < config.NUM_LAYERS-1 else names["c_out"][i]
             descriptions_per_layer[name] = desc
             zero_status[name] = is_zero
         for i, (desc, is_zero) in enumerate(role_descriptions):
-            name = f"R_{layer_index}_{i}" if layer_index < config.NUM_LAYERS-1 else per_action_name[action_name]["r_out"][i] 
+            name = f"R_{layer_index}_{i}" if layer_index < config.NUM_LAYERS-1 else names["r_out"][i] 
             descriptions_per_layer[name] = desc
             zero_status[name] = is_zero
         
         
-        concept_names_per_layer.append([f"C_{layer_index}_{i}" if layer_index < config.NUM_LAYERS-1 else per_action_name[action_name]["c_out"][i] for i in range(out_concepts)])
-        role_names_per_layer.append([f"R_{layer_index}_{i}" if layer_index < config.NUM_LAYERS-1 else per_action_name[action_name]["r_out"][i] for i in range(out_roles)])
+        concept_names_per_layer.append([f"C_{layer_index}_{i}" if layer_index < config.NUM_LAYERS-1 else names["c_out"][i] for i in range(out_concepts)])
+        role_names_per_layer.append([f"R_{layer_index}_{i}" if layer_index < config.NUM_LAYERS-1 else names["r_out"][i] for i in range(out_roles)])
     return descriptions_per_layer, concept_names_per_layer, role_names_per_layer
 
 
