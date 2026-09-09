@@ -255,7 +255,8 @@ for lp_idx, t in enumerate(targets):
         # Train and evaluate
         # ====================================================
 
-        tp, tn, fp, fn, _, _, _, _ = NDLM_main.main(
+        args.return_details = True
+        result = NDLM_main.main(
             train,
             test,
             config,
@@ -268,6 +269,12 @@ for lp_idx, t in enumerate(targets):
             ),
             log=log
         )
+        test_totals = result["test"]["totals"]
+        tp = test_totals["tp_c"]
+        tn = test_totals["tn_c"]
+        fp = test_totals["fp_c"]
+        fn = test_totals["fn_c"]
+        log(f"Final train results: {result['train']}")
 
         print(
             f"TP={tp}, FP={fp}, TN={tn}, FN={fn}"

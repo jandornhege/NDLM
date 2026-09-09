@@ -49,7 +49,7 @@ def mimir_state_to_concept_role_data(state, problem, only_fluid=False, padding=0
 
     #initialize empty tensors
     concepts_tensor = torch.zeros((len(concept_p), num_objects+padding), dtype=torch.float32)
-    roles_tensor = torch.zeros((len(role_p), num_objects+padding, num_objects+padding), dtype=torch.float32)
+    roles_tensor = torch.zeros((len(role_p)+1, num_objects+padding, num_objects+padding), dtype=torch.float32)
     
     #fill with 1s where atoms are true in the state
     for atom in atoms:
@@ -62,8 +62,8 @@ def mimir_state_to_concept_role_data(state, problem, only_fluid=False, padding=0
                 concepts_tensor[concept_p.index(p.get_name()), atom.get_objects()[0].get_index()] = 1.0
         elif p.get_name() in role_p:
             roles_tensor[role_p.index(p.get_name()), atom.get_objects()[0].get_index(), atom.get_objects()[1].get_index()] = 1.0
-    # for i in range(num_objects):
-    #     roles_tensor[-1, i, i] = 1.0  # add identity-role
+    for i in range(num_objects):
+        roles_tensor[-1, i, i] = 1.0  # add identity-role
     return concepts_tensor, roles_tensor, concept_p, role_p
 
 

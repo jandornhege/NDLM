@@ -154,6 +154,51 @@ def main(train_dataset, test_dataset, config, args, model, checkpoint_path=None,
     final_train_res = {}
     final_test_res = {}
 
+    def result_with_details(test_totals, test_per_dataset):
+        train_totals = {
+            "c_miss": sum(value["c_miss"] for value in final_train_res.values()),
+            "r_miss": sum(value["r_miss"] for value in final_train_res.values()),
+            "overc": sum(value["overc"] for value in final_train_res.values()),
+            "underc": sum(value["underc"] for value in final_train_res.values()),
+            "overr": sum(value["overr"] for value in final_train_res.values()),
+            "underr": sum(value["underr"] for value in final_train_res.values()),
+        }
+        test_tp_c, test_tn_c, test_fp_c, test_fn_c, test_tp_r, test_tn_r, test_fp_r, test_fn_r = test_totals
+        details = {
+            "train": {
+                "per_dataset": dict(final_train_res),
+                "totals": train_totals,
+            },
+            "test": {
+                "per_dataset": {
+                    f"dataset_{index}": {
+                        "tp_c": values[0],
+                        "tn_c": values[1],
+                        "fp_c": values[2],
+                        "fn_c": values[3],
+                        "tp_r": values[4],
+                        "tn_r": values[5],
+                        "fp_r": values[6],
+                        "fn_r": values[7],
+                    }
+                    for index, values in enumerate(test_per_dataset)
+                },
+                "totals": {
+                    "tp_c": test_tp_c,
+                    "tn_c": test_tn_c,
+                    "fp_c": test_fp_c,
+                    "fn_c": test_fn_c,
+                    "tp_r": test_tp_r,
+                    "tn_r": test_tn_r,
+                    "fp_r": test_fp_r,
+                    "fn_r": test_fn_r,
+                },
+            },
+        }
+        if getattr(args, "return_details", False):
+            return details
+        return test_totals
+
     # ------------------------------
     # Training loop
     # ------------------------------
@@ -161,6 +206,7 @@ def main(train_dataset, test_dataset, config, args, model, checkpoint_path=None,
 
     def run_test_round(epoch_label):
         totals = [0] * 8
+        per_dataset_totals = []
         model.eval()
         with torch.no_grad():
             for dataset_idx, data in enumerate(test_dataset):
@@ -224,6 +270,7 @@ def main(train_dataset, test_dataset, config, args, model, checkpoint_path=None,
                 fn_r = under_estimates_r
 
                 dataset_totals = (tp_c, tn_c, fp_c, fn_c, tp_r, tn_r, fp_r, fn_r)
+                per_dataset_totals.append(dataset_totals)
                 totals = [total + value for total, value in zip(totals, dataset_totals)]
                 
                 if verbose:
@@ -232,9 +279,9 @@ def main(train_dataset, test_dataset, config, args, model, checkpoint_path=None,
                 final_test_res[f"dataset_{dataset_idx}"] = {"c_miss": c_missclassifcations, "r_miss": role_missclassifcations, "overc": over_estimates_c, "underc": under_estimates_c, "overr": over_estimates_r, "underr": under_estimates_r}
             model.train()
             log(f"Test summary [{epoch_label}]: c_miss={totals[2]+totals[3]}, r_miss={totals[6]+totals[7]} over {len(test_dataset)} datasets")
-            return tuple(totals)
+            return tuple(totals), per_dataset_totals
 
-    early_stop_patience = 10
+    early_stop_patience = getattr(args, "early_stop_patience", 10)
     zero_miss_streak = 0
     shuffle_datasets = True
     fold_time_limit_seconds = getattr(args, "fold_time_limit_seconds", None)
@@ -420,8 +467,8 @@ def main(train_dataset, test_dataset, config, args, model, checkpoint_path=None,
                 os.makedirs(checkpoint_path, exist_ok=True)
                 torch.save(model.state_dict(), Path(checkpoint_path)/f"checkpoint_final.pt")
                 log(f"Saved final model checkpoint to {Path(checkpoint_path)/f'checkpoint_final.pt'}")
-            tp_c, tn_c, fp_c, fn_c, tp_r, tn_r, fp_r, fn_r = run_test_round(f"epoch {epoch} (final)")
-            return tp_c, tn_c, fp_c, fn_c, tp_r, tn_r, fp_r, fn_r
+            test_totals, per_dataset_totals = run_test_round(f"epoch {epoch} (final)")
+            return result_with_details(test_totals, per_dataset_totals)
 
         if fold_time_limit_seconds is not None and time.time() - fold_start_time >= fold_time_limit_seconds:
             log(f"Stopping at epoch {epoch}: fold time limit of {fold_time_limit_seconds} seconds reached.")
@@ -430,11 +477,11 @@ def main(train_dataset, test_dataset, config, args, model, checkpoint_path=None,
                 os.makedirs(checkpoint_path, exist_ok=True)
                 torch.save(model.state_dict(), Path(checkpoint_path)/f"checkpoint_final.pt")
                 log(f"Saved final model checkpoint to {Path(checkpoint_path)/f'checkpoint_final.pt'}")
-            tp_c, tn_c, fp_c, fn_c, tp_r, tn_r, fp_r, fn_r = run_test_round(f"epoch {epoch} (final, time limit)")
-            return tp_c, tn_c, fp_c, fn_c, tp_r, tn_r, fp_r, fn_r
+            test_totals, per_dataset_totals = run_test_round(f"epoch {epoch} (final, time limit)")
+            return result_with_details(test_totals, per_dataset_totals)
 
         if args.test_interval > 0 and epoch % args.test_interval == 0:
-            tp_c, tn_c, fp_c, fn_c, tp_r, tn_r, fp_r, fn_r = run_test_round(f"epoch {epoch}")
+            (tp_c, tn_c, fp_c, fn_c, tp_r, tn_r, fp_r, fn_r), per_dataset_totals = run_test_round(f"epoch {epoch}")
             
             # Log Model Checkpoint
             if checkpoint_path is not None:
@@ -447,4 +494,5 @@ def main(train_dataset, test_dataset, config, args, model, checkpoint_path=None,
         torch.save(model.state_dict(), Path(checkpoint_path)/"checkpoint_final.pt")
         log(f"Saved final model checkpoint to {Path(checkpoint_path)/'checkpoint_final.pt'}")
 
-    return run_test_round(f"epoch {args.num_epochs} (final)")
+    test_totals, per_dataset_totals = run_test_round(f"epoch {args.num_epochs} (final)")
+    return result_with_details(test_totals, per_dataset_totals)

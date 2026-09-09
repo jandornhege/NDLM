@@ -6,7 +6,7 @@
 #SBATCH --mem=64g                   # Memory allocation
 #SBATCH --partition=rleap_gpu_24gb  # Partition (queue) to use
 #SBATCH --output=/work/rleap1/jan.dornhege/B_Runs/%A_%a.txt  # Output log file per array task
-#SBATCH --time=01:00:00
+#SBATCH --time=06:00:00
 #SBATCH --array=0-31         # 4 tasks × 8 configs (c5-c12)
 
 TASK_NAMES=(

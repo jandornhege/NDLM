@@ -117,6 +117,41 @@ def get_GP_dataset(domain):
         data_dir[action] = (train_dataset, test_dataset)
     return data_dir
 
+
+def run_execution_test(args, models_per_action):
+    """Evaluate trained GP action models on metadata-selected test problems."""
+    domain_information = ActionModel_data_encoding.load_domain_information(args)
+    test_paths = (
+        domain_information["test_problem_paths"]
+        + domain_information.get("eval_problem_paths", [])
+    )
+    if not test_paths:
+        raise ValueError("No execution-test problem paths were selected by domain_information.json")
+
+    results = ActionModel_data_encoding.random_trace_generator.test_model_on_test_problems(
+        domain_information["domain_path"],
+        test_paths,
+        models_per_action,
+        parameter_indices=domain_information["argument_indices"],
+        max_steps=args.num_test_states,
+        soft_policy=False,
+        model_type=args.prediction_type,
+        one_step_cycle_check=False,
+    )
+    successes = sum(result["goal_reached"] for result in results.values())
+    optimal = sum(
+        result["goal_reached"] and result["steps_taken"] == result["optimal_steps"]
+        for result in results.values()
+    )
+    log(f"Execution test: {successes}/{len(results)} goals reached")
+    log(f"Execution test optimal: {optimal}/{len(results)} optimal solutions")
+    for path, result in results.items():
+        log(
+            f"Execution result: file={path}, steps_taken={result['steps_taken']}, "
+            f"success={result['goal_reached']}, optimal_steps={result['optimal_steps']}"
+        )
+    return results
+
 def get_hard_graphs_dataset(args):
     data_dir = hard_instance_generator.get_hard_graphs_dataset(args)
     for action, (train_data, test_data) in data_dir.items():
@@ -333,6 +368,15 @@ if __name__ == "__main__":
     parser.add_argument("--prediction_type", default="state_full", choices=["state_action_nullary", "state_pair_nullary", "state_full"], help="Type of prediction for optGP and GP tasks.")
     parser.add_argument("--test_by_execution", action="store_true", help="Whether to test by execution for optGP and GP tasks.")
     parser.add_argument("--test_supervised", action="store_true", help="Whether to use supervised testset.")
+    parser.add_argument(
+        "--combined-test",
+        action="store_true",
+        help=(
+            "Run training with the supervised train/test evaluation in one job. "
+            "This does not run execution testing; use --test-only for the "
+            "separate checkpoint execution workflow."
+        ),
+    )
     parser.add_argument("--sampling-method", default="bfs", choices=["bfs", "opt_then_bfs"], help="Sampling method for optGP and GP tasks.")
 
     # Hard graphs task hyperparameters
@@ -366,6 +410,8 @@ if __name__ == "__main__":
     parser.add_argument("--batch-size", type=int, default=1, help="Batch size for training.")
     parser.add_argument("--weighted_loss", action="store_true", help="Whether to use weighted loss.")
     parser.add_argument("--loss-type", type=str, default="BCE", choices=["BCE", "Noisy_OR", "SoftmaxSet"], help="Type of loss to use: 'weighted' or 'unweighted'.")
+    parser.add_argument("--early-stop-patience", type=int, default=10, help="Number of epochs with no improvement after which training will be stopped.")
+
 
     # Test options
     parser.add_argument("--test-only", action="store_true", help="Whether to only run tests without training.")
@@ -426,6 +472,11 @@ if __name__ == "__main__":
         args.target_mode = "applicability_vector"
     else:
         args.target_mode = "state"
+
+    if args.combined_test and args.task not in {"GP", "optGP"}:
+        parser.error("--combined-test is only supported with --task GP or --task optGP")
+    if args.combined_test:
+        args.test_supervised = True
 
     if args.benchmark_inference:
         if args.task != "hard_graphs":
@@ -575,6 +626,7 @@ if __name__ == "__main__":
         export_args_to_file(args, args.experiment_path / f"args.txt")
         action_names=list(datasets.keys())
         action_names.sort()
+        models_per_action = {}
         
         for action in action_names:
             train, test = datasets[action]
@@ -589,12 +641,53 @@ if __name__ == "__main__":
                 model = modules.MultiLayerNDLM(in_concepts, in_roles, out_concepts, out_roles, c)
             else:
                 model = layer.NLM_to_NDLM_Adapter(in_concepts, in_roles, out_concepts, out_roles, args)
+            models_per_action[action] = model
             
-            _, final_train_res, final_test_res, time_stats = NDLM_main.main(train, test, c, args, model, checkpoint_path=args.experiment_path / f"{action}/checkpoints" if args.experiment_path else None, log=log)
+            args.return_details = True
+            action_start_time = time.perf_counter()
+            result = NDLM_main.main(
+                train,
+                test,
+                c,
+                args,
+                model,
+                checkpoint_path=(
+                    args.experiment_path / f"{action}/checkpoints"
+                    if args.experiment_path
+                    else None
+                ),
+                log=log,
+            )
+            train_results = result["train"]
+            test_totals = result["test"]["totals"]
+            tp_c = test_totals["tp_c"]
+            tn_c = test_totals["tn_c"]
+            fp_c = test_totals["fp_c"]
+            fn_c = test_totals["fn_c"]
+            tp_r = test_totals["tp_r"]
+            tn_r = test_totals["tn_r"]
+            fp_r = test_totals["fp_r"]
+            fn_r = test_totals["fn_r"]
             
             if args.dump_dir:
                 init_logger(f"{args.dump_dir}/{args.experiment_name}/output.log")
             log(f"Finished training for action: {action}, Train size: {len(train)}, Test size: {len(test)}")
-            log(f"Final Train Results for action {action}: {final_train_res}")
-            log(f"Final Test Results for action {action}: {final_test_res}")
-            log(f"Average Epoch Time for action {action}: {sum(time_stats)/len(time_stats):.4f} seconds")
+            log(f"Final Train Results for action {action}: {train_results}")
+            log(
+                f"Final Test Results for action {action}: "
+                f"{result['test']}"
+            )
+            train_totals = train_results["totals"]
+            test_totals = result["test"]["totals"]
+            log(
+                f"Overview misclassifications for action {action}: "
+                f"train #c_miss={train_totals['c_miss']}, "
+                f"train #r_miss={train_totals['r_miss']}, "
+                f"test #c_miss={test_totals['fp_c'] + test_totals['fn_c']}, "
+                f"test #r_miss={test_totals['fp_r'] + test_totals['fn_r']}"
+            )
+            log(
+                f"Elapsed training time for action {action}: "
+                f"{time.perf_counter() - action_start_time:.4f} seconds"
+            )
+

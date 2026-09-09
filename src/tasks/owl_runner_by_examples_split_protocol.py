@@ -7,6 +7,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 from sklearn.model_selection import StratifiedKFold, train_test_split
+import difflogic.nn.neural_logic.layer as layer
 
 from ndlm.configs import config_object
 from ndlm.modules import MultiLayerNDLM
@@ -60,6 +61,10 @@ def parse_args():
 	parser.add_argument("--hidden-roles", type=int, default=5)
 	parser.add_argument("--weight-decay", type=float, default=1e-4)
 	parser.add_argument("--activation", choices=("identity", "sigmoid"), default="sigmoid")
+	parser.add_argument("--model", choices=("NDLM", "NLM"), default="NDLM")
+	parser.add_argument("--nlm-breadth", type=int, default=3)
+	parser.add_argument("--nlm-exclude-self", action="store_true")
+	parser.add_argument("--nlm-residual", action="store_true")
 	parser.add_argument("--configuration-name", default="L3H5_sig")
 	parser.add_argument("--output-root", default="BY_EXAMPLE_SPLIT")
 	parser.add_argument("--problem-index", type=int, default=None)
@@ -154,6 +159,19 @@ def build_config(args):
 	return config
 
 
+def build_model(args, config, in_concepts, in_roles):
+	if args.model == "NLM":
+		args.activation_function = args.activation
+		return layer.NLM_to_NDLM_Adapter(
+			in_concepts,
+			in_roles,
+			1,
+			0,
+			args,
+		)
+	return MultiLayerNDLM(in_concepts, in_roles, 1, 0, config)
+
+
 def make_sample_cache(args, domain_owl_file):
 	sample_cache = {}
 
@@ -219,12 +237,11 @@ def run_fixed_config_fold(
 	os.makedirs(training_args.experiment_path, exist_ok=True)
 
 	first_sample = train[0]
-	model = MultiLayerNDLM(
+	model = build_model(
+		args,
+		config,
 		first_sample[0].shape[1],
 		first_sample[1].shape[1],
-		1,
-		0,
-		config,
 	).to(device).eval()
 
 	init_logger(problem_path / "folds" / f"{fold_dir_name}.log")
@@ -236,10 +253,13 @@ def run_fixed_config_fold(
 		f"layers={args.num_layers}, "
 		f"hidden={args.hidden_concepts}/{args.hidden_roles}, "
 		f"activation={args.activation}, "
+		f"model={args.model}, "
+		f"nlm_breadth={args.nlm_breadth}, "
 		f"neighborhood={args.neighborhood}"
 	)
 
-	tp, tn, fp, fn, _, _, _, _ = NDLM_main.main(
+	training_args.return_details = True
+	result = NDLM_main.main(
 		train,
 		test,
 		config,
@@ -248,6 +268,12 @@ def run_fixed_config_fold(
 		checkpoint_path=training_args.experiment_path / "checkpoints",
 		log=log,
 	)
+	test_totals = result["test"]["totals"]
+	tp = test_totals["tp_c"]
+	tn = test_totals["tn_c"]
+	fp = test_totals["fp_c"]
+	fn = test_totals["fn_c"]
+	log(f"Final train results: {result['train']}")
 	init_logger(summary_log)
 	log(f"{fold_label}: TP={tp}, FP={fp}, TN={tn}, FN={fn}")
 	return tp, fp, tn, fn

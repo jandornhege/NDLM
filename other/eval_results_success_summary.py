@@ -183,6 +183,7 @@ def main() -> int:
         return 0
 
     for eval_dir in eval_results_dirs:
+        print(eval_dir)
         experiment_dir = os.path.dirname(eval_dir)
         summary = ExperimentSummary(
             experiment_dir=experiment_dir,

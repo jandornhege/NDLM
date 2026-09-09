@@ -28,3 +28,6 @@ other/reportsbenchmarks_best.txt
 other/eval_results_success_summary_NLDM.log
 other/concept_learning_results.txt
 src/tasks/celoe_test.py
+benchmark_approach_vs_domain.aux
+benchmark_approach_vs_domain.log
+benchmark_approach_vs_domain.pdf

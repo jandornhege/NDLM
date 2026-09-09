@@ -311,7 +311,8 @@ for lp_name, examples in problem_items:
         )
 
 
-        tp, tn, fp, fn, _, _, _, _ = NDLM_main.main(
+        training_args.return_details = True
+        result = NDLM_main.main(
             train,
             test,
             config,
@@ -324,6 +325,12 @@ for lp_name, examples in problem_items:
             ),
             log=log,
         )
+        test_totals = result["test"]["totals"]
+        tp = test_totals["tp_c"]
+        tn = test_totals["tn_c"]
+        fp = test_totals["fp_c"]
+        fn = test_totals["fn_c"]
+        log(f"Final train results: {result['train']}")
         init_logger(summary_log)
 
         total_tp += tp

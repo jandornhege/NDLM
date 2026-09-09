@@ -7,7 +7,8 @@
 #SBATCH --partition=rleap_gpu_24gb  # Partition (queue) to use
 #SBATCH --output=/work/rleap1/jan.dornhege/B_Runs/%A_%a.txt  # Output log file per array task
 #SBATCH --time=01:00:00
-#SBATCH --array=0-17          # One task per 1D-ARC benchmark
+#SBATCH --array=0-359         # 18 tasks x 2 configurations x 10 runs
+#SBATCH --qos=rleap_deadline
 
 TASK_NAMES=(
 	1d_mirror
@@ -30,15 +31,27 @@ TASK_NAMES=(
 	1d_recolor_oe
 )
 
-TASK_NAME="${TASK_NAMES[$SLURM_ARRAY_TASK_ID]}"
+CONFIG_IDS=(0 2)
+NUM_TASKS=${#TASK_NAMES[@]}
+NUM_CONFIGS=${#CONFIG_IDS[@]}
+
+RUN_INDEX=$((SLURM_ARRAY_TASK_ID / (NUM_CONFIGS * NUM_TASKS)))
+REMAINDER=$((SLURM_ARRAY_TASK_ID % (NUM_CONFIGS * NUM_TASKS)))
+CONFIG_INDEX=$((REMAINDER / NUM_TASKS))
+TASK_INDEX=$((REMAINDER % NUM_TASKS))
+
+TASK_NAME="${TASK_NAMES[$TASK_INDEX]}"
+CONFIG_ID="${CONFIG_IDS[$CONFIG_INDEX]}"
+CONFIG_FILE="/work/rleap1/jan.dornhege/NDLM/src/ndlm/config_files/c${CONFIG_ID}.json"
+OUTPUT_DIR="/work/rleap1/jan.dornhege/NDLM/outputs/NDLM_1D_ARC/c${CONFIG_ID}/run_${RUN_INDEX}/$TASK_NAME"
 
 # Activate virtual environment
 source /work/rleap1/jan.dornhege/envs/py3.12_graph_separator/bin/activate
 
-echo "Activated venv, starting task: $TASK_NAME"
+echo "Activated venv, starting task: $TASK_NAME (config c${CONFIG_ID}, run ${RUN_INDEX})"
 
 cd /work/rleap1/jan.dornhege/NDLM/src/
 
 export PYTHONPATH=/work/rleap1/jan.dornhege/neural-logic-machines:/work/rleap1/jan.dornhege/neural-logic-machines/third_party/Jacinle:$PYTHONPATH
 
-python tasks/learn_task.py --task 1DARC --name "$TASK_NAME" --model NDLM --dump-dir /work/rleap1/jan.dornhege/NDLM/outputs/NDLM_1D_ARC/c2/$TASK_NAME --config-file /work/rleap1/jan.dornhege/NDLM/src/ndlm/config_files/c2.json
+python tasks/learn_task.py --task 1DARC --arc-task-name "$TASK_NAME" --model NDLM --dump-dir "$OUTPUT_DIR" --config-file "$CONFIG_FILE"

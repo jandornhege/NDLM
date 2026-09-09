@@ -66,10 +66,28 @@ def export_domain_information(domain_information, args):
 def load_domain_information(args):
     base_path = Path(args.data_path)
     domain_name = args.domain
-    domain_path = base_path / domain_name / "domain.pddl"
-    train_problem_paths = sorted(str(p) for p in (Path(base_path) / domain_name / "train").glob("*.pddl"))
-    test_problem_paths = sorted(str(p) for p in (Path(base_path) / domain_name / "test").glob("*.pddl"))
-    domain_information = json.load(open(Path(base_path) / domain_name / "domain_information.json", "r"))
+    domain_root = base_path / domain_name
+    domain_information = json.load(open(domain_root / "domain_information.json", "r"))
+    domain_path = domain_root / domain_information.get("domain_file", "domain.pddl")
+
+    train_dir = domain_root / "train"
+    test_dir = domain_root / "test"
+    train_problem_paths = [
+        str(
+            train_dir / name
+            if (train_dir / name).is_file()
+            else domain_root / name
+        )
+        for name in domain_information["train_instance_names"]
+    ]
+    test_problem_paths = [
+        str(
+            test_dir / name
+            if (test_dir / name).is_file()
+            else domain_root / name
+        )
+        for name in domain_information["test_instance_names"]
+    ]
     print(args.remove_arguments, args.remove_predicates, flush=True)
     if args.remove_arguments:
 
@@ -425,7 +443,7 @@ def get_GP_dataset(args):
         domain_information["domain_path"],
         domain_information["train_problem_paths"],
         parameter_indices=domain_information["argument_indices"],
-        domain_name=domain_information["domain_name"],
+        domain_name=domain_information["domain"],
         max_states=args.num_train_states,
         max_sampling_seconds_per_problem=args.max_sampling_seconds_per_problem,
     )
@@ -435,7 +453,7 @@ def get_GP_dataset(args):
         domain_information["domain_path"],
         domain_information["test_problem_paths"],
         parameter_indices=domain_information["argument_indices"],
-        domain_name=domain_information["domain_name"],
+        domain_name=domain_information["domain"],
         max_states=args.num_test_states,
         max_sampling_seconds_per_problem=args.max_sampling_seconds_per_problem,
     )

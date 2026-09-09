@@ -29,6 +29,19 @@ METHOD_F1_PATTERN = re.compile(
     r"(?P<method>[A-Za-z0-9_-]+)\s+F1=(?P<f1>\d+(?:\.\d+)?)"
 )
 LEGACY_SWAPPED_METRICS = False
+NLM_CONFIG_PREFIX = re.compile(r"^NLM_arity\d+_(L\d+H\d+_(?:identity|sigmoid)_unmarked)$")
+EXISTING_NDLM_CONFIGURATIONS = {
+    "L4H5_identity_unmarked",
+    "L4H5_sigmoid_unmarked",
+    "L4H10_identity_unmarked",
+    "L4H10_sigmoid_unmarked",
+}
+
+
+def normalized_configuration(configuration: str) -> str:
+    """Map NLM run names to their comparable NDLM configuration names."""
+    match = NLM_CONFIG_PREFIX.fullmatch(configuration)
+    return match.group(1) if match else configuration
 
 
 def fold_f1(fold: dict) -> float:
@@ -115,13 +128,33 @@ def parse_summary(summary_path: Path, root: Path, check_benchmarks: bool) -> dic
     }
 
 
-def collect_results(root: Path, check_benchmarks: bool, domain_name) -> list[dict]:
+def iter_summary_logs(root: Path, domain_name: str):
+    """Yield summary.log files under a single domain while avoiding repeated glob expansion."""
+    for dirpath, dirnames, filenames in __import__("os").walk(root):
+        if "summary.log" in filenames:
+            summary_path = Path(dirpath) / "summary.log"
+            try:
+                parts = summary_path.relative_to(root).parts
+            except ValueError:
+                continue
+            if len(parts) >= 6 and parts[1] == domain_name:
+                yield summary_path
+
+
+def collect_results(root: Path, check_benchmarks: bool, domain_name, common_ndlm_nlm_only: bool) -> list[dict]:
     DOMAIN_NAME = domain_name
     results = []
-    for summary_path in root.glob(f"*/{DOMAIN_NAME}/**/summary.log"):
+    for summary_path in iter_summary_logs(root, DOMAIN_NAME):
         result = parse_summary(summary_path, root, check_benchmarks=check_benchmarks)
         if result is not None and (result["f1"] is not None or result["folds"]):
             results.append(result)
+    if common_ndlm_nlm_only:
+        results = [
+            result
+            for result in results
+            if normalized_configuration(result["configuration"])
+            in EXISTING_NDLM_CONFIGURATIONS
+        ]
     return keep_best_run_per_problem(results)
 
 
@@ -172,6 +205,7 @@ def print_text(results: list[dict], check_benchmarks: bool) -> None:
     #     print(f"  folds: [{fold_values}]")
 
     overview = {}
+    complete_runs_by_setup = {}
     for result in results:
         setup = (result["configuration"], result["neighborhood"])
         summary = overview.setdefault(
@@ -179,6 +213,8 @@ def print_text(results: list[dict], check_benchmarks: bool) -> None:
             {"runs": 0, "folds": 0, "tp": 0, "fp": 0, "tn": 0, "fn": 0},
         )
         summary["runs"] += 1
+        if result["f1"] is not None:
+            complete_runs_by_setup[setup] = complete_runs_by_setup.get(setup, 0) + 1
         for fold in result["folds"]:
             summary["folds"] += 1
             for metric in ("tp", "fp", "tn", "fn"):
@@ -197,13 +233,8 @@ def print_text(results: list[dict], check_benchmarks: bool) -> None:
         sorted(overview_rows, key=lambda row: row[0], reverse=True),
         start=1,
     ):
-        complete_runs = sum(
-            1
-            for result in results
-            if result["configuration"] == configuration
-            and result["neighborhood"] == neighborhood
-            and result["f1"] is not None
-        )
+        setup = (configuration, neighborhood)
+        complete_runs = complete_runs_by_setup.get(setup, 0)
         print(
             f"{rank}. {configuration} | neighborhood={neighborhood} | "
             f"combined F1={f1:.4f} | "
@@ -425,10 +456,20 @@ def main() -> None:
     )
     parser.add_argument("--json", action="store_true", help="Print JSON instead of text.")
     parser.add_argument("--check-benchmarks", action="store_true", help="Check benchmark results.")
+    parser.add_argument(
+        "--common-ndlm-nlm-configs",
+        action="store_true",
+        help="Temporarily keep only NLM configurations also covered by the NDLM sweep.",
+    )
     args = parser.parse_args()
     for name in names:
         print("parsing domain:", name)
-        results = collect_results(args.root, check_benchmarks=args.check_benchmarks, domain_name= name )
+        results = collect_results(
+            args.root,
+            check_benchmarks=args.check_benchmarks,
+            domain_name=name,
+            common_ndlm_nlm_only=args.common_ndlm_nlm_configs,
+        )
         if args.json:
             print(json.dumps(results, indent=2))
         else:

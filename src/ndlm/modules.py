@@ -3,6 +3,7 @@ import copy
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from torch.utils.checkpoint import checkpoint
 
 import ndlm.configs
 
@@ -153,6 +154,13 @@ class RRMinMaxAttention(nn.Module):
             return o
         return max(1, min(o, self.chunk_bytes // bytes_per_k))
 
+    @staticmethod
+    def _chunk_extrema(roles, start, end):
+        left = roles[:, :, None, :, None, start:end]
+        right = roles[:, :, start:end, :].transpose(2, 3)[:, None, :, None, :, :]
+        prod = left * right
+        return prod.max(dim=-1).values, prod.min(dim=-1).values
+
     def forward(self, roles):
         # roles: (b, num_roles, num_objects, num_objects)
         b, r, o, k = roles.shape
@@ -163,14 +171,19 @@ class RRMinMaxAttention(nn.Module):
 
         for start in range(0, k, chunk_size):
             end = min(start + chunk_size, k)
+            if self.training and roles.requires_grad:
+                chunk_max, chunk_min = checkpoint(
+                    lambda input_roles, chunk_start=start, chunk_end=end: self._chunk_extrema(
+                        input_roles, chunk_start, chunk_end
+                    ),
+                    roles,
+                    use_reentrant=True,
+                )
+            else:
+                chunk_max, chunk_min = self._chunk_extrema(roles, start, end)
 
-            left = roles[:, :, None, :, None, start:end]                              # [b, r(i), 1, o1, 1, chunk]
-            right = roles[:, :, start:end, :].transpose(2, 3)[:, None, :, None, :, :]  # [b, 1, r(j), 1, o2, chunk]
-
-            prod = left * right  # [b, r, r, o1, o2, chunk]
-
-            max_scores = torch.maximum(max_scores, prod.max(dim=-1).values)
-            min_scores = torch.minimum(min_scores, prod.min(dim=-1).values)
+            max_scores = torch.maximum(max_scores, chunk_max)
+            min_scores = torch.minimum(min_scores, chunk_min)
 
         # combine min and max aggregation results
         scores = torch.cat([max_scores, min_scores], dim=1)
