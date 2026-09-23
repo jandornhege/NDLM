@@ -13,12 +13,36 @@ from difflogic import nn
 import ndlm.main as NDLM_main
 import ndlm.configs as config
 import ndlm.modules as modules
+import ndlm.baselines as baselines
 import sys
 import os
 import torch
 import time
 import difflogic.nn.neural_logic.layer as layer
 from my_logging import log, init_logger
+
+def infer_run_id(args=None):
+    for source in [
+        getattr(args, "run_id", None) if args is not None else None,
+        os.environ.get("RUN_ID"),
+        os.environ.get("SLURM_ARRAY_TASK_ID"),
+        os.environ.get("SLURM_JOB_ID"),
+    ]:
+        if source is None:
+            continue
+        value = str(source).strip()
+        if value:
+            return value
+    return None
+
+
+def make_experiment_name(args=None):
+    timestamp = int(time.time())
+    run_id = infer_run_id(args)
+    if run_id is None:
+        return str(timestamp)
+    return f"{timestamp}_{run_id}"
+
 
 def export_args_to_file(args, file_path):
     with open(file_path, 'w') as f:
@@ -158,6 +182,38 @@ def get_hard_graphs_dataset(args):
         train_dataset, test_dataset = datapoints_to_dataset([train_data], [test_data])
         data_dir[action] = (train_dataset, test_dataset)
     return data_dir
+
+
+def get_datasets(args):
+    if args.task == "1DARC":
+        return get_1D_ARC_dataset(args)
+    if args.task == "ActionModel":
+        return get_Action_Model_learning_datasets(args)
+    if args.task == "optGP":
+        return get_OPTIMAL_GP_dataset(args)
+    if args.task == "GP":
+        return get_GP_dataset(args)
+    if args.task == "hard_graphs":
+        return get_hard_graphs_dataset(args)
+    raise ValueError(f"Unknown task: {args.task}")
+
+
+def save_dataset(datasets, file_path):
+    file_path = Path(file_path)
+    file_path.parent.mkdir(parents=True, exist_ok=True)
+    torch.save(datasets, file_path)
+    log(f"Dataset exported to: {file_path}")
+
+
+def load_dataset(file_path):
+    file_path = Path(file_path)
+    if not file_path.is_file():
+        raise FileNotFoundError(f"Dataset file not found: {file_path}")
+    datasets = torch.load(file_path, map_location="cpu", weights_only=True)
+    if not isinstance(datasets, dict):
+        raise ValueError(f"Dataset file must contain an action-to-dataset dictionary: {file_path}")
+    log(f"Dataset loaded from: {file_path}")
+    return datasets
 
 
 def count_parameters(model):
@@ -335,9 +391,10 @@ if __name__ == "__main__":
 
     # Experiment hyperparameters
     parser = argparse.ArgumentParser(description="Runs NDLM tasks using model(NLM or NDLM) on 1D-ARC or Action Model learning datasets.")
-    parser.add_argument("--model", default="NDLM", choices=["NDLM", "NLM"], help="Model to use currently: NDLM or NLM.")
+    parser.add_argument("--model", default="NDLM", choices=["NDLM", "NLM", "MLP", "GNN", "2GNN", "3GNN", "EdgeTransformer", "PPGN"], help="Model architecture.")
     parser.add_argument("--task", type=str, choices=["1DARC", "ActionModel", "optGP", "GP", "hard_graphs"], help="'1DARC', 'ActionModel', 'optGP', 'GP', or 'hard_graphs'")
     parser.add_argument("--dump-dir", type=str, help="Directory to dump results.")
+    parser.add_argument("--run-id", type=str, default=os.environ.get("RUN_ID") or os.environ.get("SLURM_ARRAY_TASK_ID") or os.environ.get("SLURM_JOB_ID"), help="Run identifier used to disambiguate simultaneous jobs started in the same second.")
     parser.add_argument("--config-file", type=str, help="Path to a JSON config file to load configuration parameters from.")
     parser.add_argument(
         "--max-sampling-seconds-per-problem",
@@ -400,6 +457,11 @@ if __name__ == "__main__":
     parser.add_argument("--nlm-breadth", type=int, default=3, help="Breadth of the NLM model.")
     parser.add_argument("--nlm-exclude-self", action="store_true", help="Whether to exclude self in the NLM model.")
     parser.add_argument("--nlm-residual", action="store_true", help="Whether to use residual connections in the NLM model.")
+    parser.add_argument("--baseline-hidden-size", type=int, default=64, help="Hidden size for MLP and GNN baselines.")
+    parser.add_argument("--baseline-layers", type=int, default=3, help="Number of message-passing layers for the GNN baseline.")
+    parser.add_argument("--baseline-heads", type=int, default=4, help="Number of attention heads for EdgeTransformer.")
+    parser.add_argument("--baseline-ppgn-depth", type=int, default=2, help="Pointwise MLP depth for the PPGN baseline.")
+    parser.add_argument("--three-gnn-max-objects", type=int, default=32, help="Maximum object count allowed by the cubic-memory 3GNN baseline.")
 
 
     # Training hyperparameters
@@ -411,10 +473,39 @@ if __name__ == "__main__":
     parser.add_argument("--weighted_loss", action="store_true", help="Whether to use weighted loss.")
     parser.add_argument("--loss-type", type=str, default="BCE", choices=["BCE", "Noisy_OR", "SoftmaxSet"], help="Type of loss to use: 'weighted' or 'unweighted'.")
     parser.add_argument("--early-stop-patience", type=int, default=10, help="Number of epochs with no improvement after which training will be stopped.")
+    parser.add_argument(
+        "--early-stop-mode",
+        type=str,
+        default="loss_and_grad_plateau",
+        choices=["converged", "loss_only", "gradient_only", "loss_and_grad_plateau"],
+        help="Stopping criterion to use: loss plateau, gradient plateau, or both.",
+    )
+    parser.add_argument(
+        "--early-stop-min-delta",
+        type=float,
+        default=1e-4,
+        help="Minimum relative improvement in the mean epoch loss before it counts as a plateau.",
+    )
+    parser.add_argument(
+        "--early-stop-grad-norm-threshold",
+        type=float,
+        default=1e-5,
+        help="Gradient norm threshold used to detect a flat gradient regime for early stopping.",
+    )
 
 
     # Test options
     parser.add_argument("--test-only", action="store_true", help="Whether to only run tests without training.")
+    parser.add_argument(
+        "--export-dataset",
+        type=str,
+        help="Generate the dataset using the other arguments and export it to this file, without training.",
+    )
+    parser.add_argument(
+        "--dataset-path",
+        type=str,
+        help="Load this exported dataset in normal training mode instead of generating it.",
+    )
     parser.add_argument("--prune-model", action="store_true", help="Whether to apply model-pruning approach.")
     parser.add_argument("--checkpoint-path", type=str, help="Path to a checkpoint file for testing.")
     parser.add_argument("--benchmark-inference", action="store_true", help="Benchmark inference time and memory for hard_graphs inputs.")
@@ -478,12 +569,15 @@ if __name__ == "__main__":
     if args.combined_test:
         args.test_supervised = True
 
+    if args.export_dataset and (args.test_only or args.prune_model):
+        parser.error("--export-dataset cannot be combined with --test-only or --prune-model")
+
     if args.benchmark_inference:
         if args.task != "hard_graphs":
             raise ValueError("--benchmark-inference currently supports only --task hard_graphs.")
 
         if args.dump_dir:
-            args.experiment_name = f"benchmark_{int(time.time())}"
+            args.experiment_name = f"benchmark_{make_experiment_name(args)}"
             args.experiment_path = Path(f"{args.dump_dir}/{args.experiment_name}")
             os.makedirs(args.experiment_path, exist_ok=True)
             init_logger(f"{args.experiment_path}/output.log")
@@ -505,10 +599,16 @@ if __name__ == "__main__":
         run_hard_graphs_benchmark(args, c)
         raise SystemExit(0)
 
-    if args.test_only:
+    if args.export_dataset:
+        export_path = Path(args.export_dataset)
+        args.experiment_path = export_path.parent
+        datasets = get_datasets(args)
+        save_dataset(datasets, export_path)
+
+    elif args.test_only:
         if args.dump_dir:
             checkpoint_last_dir = str(args.checkpoint_path).split("/")[-2]
-            args.experiment_name = str(time.time())
+            args.experiment_name = make_experiment_name(args)
             args.experiment_path = Path(f"{args.dump_dir}/{args.experiment_name}")
             os.makedirs(args.experiment_path, exist_ok=True)
             init_logger(f"{args.dump_dir}/{args.experiment_name}/output.log")
@@ -564,8 +664,8 @@ if __name__ == "__main__":
         
 
 
-    if not args.test_only:
-        args.experiment_name = f"{int(time.time())}"
+    if not args.test_only and not args.prune_model and not args.export_dataset:
+        args.experiment_name = make_experiment_name(args)
         if args.dump_dir:
             args.experiment_path = Path(f"{args.dump_dir}/{args.experiment_name}")
             os.makedirs(args.experiment_path, exist_ok=True)
@@ -597,18 +697,10 @@ if __name__ == "__main__":
         
         
         c.save_to_file(args.experiment_path / f"config.json")
-        if args.task == "1DARC":
-            datasets = get_1D_ARC_dataset(args)
-        elif args.task == "ActionModel":
-            datasets = get_Action_Model_learning_datasets(args)
-        elif args.task == "optGP":
-            datasets = get_OPTIMAL_GP_dataset(args)
-        elif args.task == "GP":
-            datasets = get_GP_dataset(args)
-        elif args.task == "hard_graphs":
-            datasets = get_hard_graphs_dataset(args)
+        if args.dataset_path:
+            datasets = load_dataset(args.dataset_path)
         else:
-            raise ValueError(f"Unknown task: {args.task}")
+            datasets = get_datasets(args)
         log("Data loaded")
 
         log(f"Actions: {datasets.keys()}")
@@ -639,8 +731,55 @@ if __name__ == "__main__":
             out_roles = train[0][3].shape[1]
             if args.model == "NDLM":
                 model = modules.MultiLayerNDLM(in_concepts, in_roles, out_concepts, out_roles, c)
-            else:
+            elif args.model == "NLM":
                 model = layer.NLM_to_NDLM_Adapter(in_concepts, in_roles, out_concepts, out_roles, args)
+            elif args.model == "MLP":
+                model = baselines.PairwiseMLP(
+                    in_concepts,
+                    in_roles,
+                    out_concepts,
+                    out_roles,
+                    hidden_size=args.baseline_hidden_size,
+                )
+            elif args.model == "GNN":
+                model = baselines.MessagePassingPairClassifier(
+                    in_concepts,
+                    in_roles,
+                    out_concepts,
+                    out_roles,
+                    hidden_size=args.baseline_hidden_size,
+                    num_layers=args.baseline_layers,
+                )
+            elif args.model == "2GNN":
+                model = baselines.TwoGNN(
+                    in_concepts, in_roles, out_concepts, out_roles,
+                    hidden_size=args.baseline_hidden_size,
+                    num_layers=args.baseline_layers,
+                )
+            elif args.model == "3GNN":
+                model = baselines.ThreeGNN(
+                    in_concepts, in_roles, out_concepts, out_roles,
+                    hidden_size=args.baseline_hidden_size,
+                    num_layers=args.baseline_layers,
+                    max_objects=args.three_gnn_max_objects,
+                )
+            elif args.model == "PPGN":
+                model = baselines.PPGN(
+                    in_concepts,
+                    in_roles,
+                    out_concepts,
+                    out_roles,
+                    hidden_size=args.baseline_hidden_size,
+                    num_layers=args.baseline_layers,
+                    mlp_depth=args.baseline_ppgn_depth,
+                )
+            else:
+                model = baselines.EdgeTransformer(
+                    in_concepts, in_roles, out_concepts, out_roles,
+                    hidden_size=args.baseline_hidden_size,
+                    num_layers=args.baseline_layers,
+                    heads=args.baseline_heads,
+                )
             models_per_action[action] = model
             
             args.return_details = True

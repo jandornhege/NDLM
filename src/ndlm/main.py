@@ -1,3 +1,4 @@
+import math
 import os
 from pathlib import Path
 from typing_extensions import final
@@ -72,7 +73,71 @@ class SoftmaxSetLoss(nn.Module):
 
         return loss.mean()
 
-    
+
+def plateau_stop_criterion(
+    current_loss,
+    best_loss,
+    grad_norm,
+    stop_patience,
+    min_delta=1e-4,
+    grad_norm_threshold=1e-5,
+    mode="loss_and_grad_plateau",
+    plateau_count=0,
+    grad_plateau_count=0,
+):
+    """Check whether the training loop is plateauing.
+
+    The criterion considers three behaviors:
+      1. loss is no longer improving beyond min_delta for stop_patience epochs;
+      2. the average gradient norm has fallen below grad_norm_threshold;
+      3. the plateau is sustained for enough consecutive epochs to be considered
+         effectively stationary.
+    """
+    if stop_patience <= 0:
+        return False, "Early stopping disabled."
+
+    if mode not in {"converged", "loss_only", "gradient_only", "loss_and_grad_plateau"}:
+        raise ValueError(f"Unknown early-stop mode: {mode!r}")
+
+    if current_loss < best_loss - min_delta:
+        return False, "Loss is still improving."
+
+    if mode == "converged":
+        should_stop = plateau_count >= stop_patience
+        reason = (
+            f"Convergence detected: loss improvement stayed below {min_delta:.3e} "
+            f"for {plateau_count}/{stop_patience} epochs."
+        )
+        return should_stop, reason
+
+    if mode == "loss_only":
+        should_stop = plateau_count >= stop_patience
+        reason = (
+            f"Loss plateau detected for {plateau_count}/{stop_patience} epochs; "
+            "the model has stopped improving."
+        )
+        return should_stop, reason
+
+    if mode == "gradient_only":
+        should_stop = grad_plateau_count >= stop_patience
+        reason = (
+            f"Gradient norm has remained below {grad_norm_threshold:.3e} for "
+            f"{grad_plateau_count}/{stop_patience} epochs."
+        )
+        return should_stop, reason
+
+    should_stop = (
+        plateau_count >= stop_patience
+        and grad_plateau_count >= min(stop_patience, max(1, stop_patience // 2))
+        and grad_norm <= grad_norm_threshold
+    )
+    reason = (
+        f"Loss and gradient plateau detected: loss plateau {plateau_count}/{stop_patience}, "
+        f"grad plateau {grad_plateau_count}/{stop_patience}, grad_norm={grad_norm:.3e}."
+    )
+    return should_stop, reason
+
+
 def compute_pos_weight(targets, log):
     # targets shape: (N, ...)
     if len(targets) == 0:
@@ -281,8 +346,14 @@ def main(train_dataset, test_dataset, config, args, model, checkpoint_path=None,
             log(f"Test summary [{epoch_label}]: c_miss={totals[2]+totals[3]}, r_miss={totals[6]+totals[7]} over {len(test_dataset)} datasets")
             return tuple(totals), per_dataset_totals
 
-    early_stop_patience = getattr(args, "early_stop_patience", 10)
+    early_stop_patience = getattr(args, "early_stop_patience", 5)
+    early_stop_mode = getattr(args, "early_stop_mode", "loss_and_grad_plateau")
+    early_stop_min_delta = getattr(args, "early_stop_min_delta", 1e-4)
+    early_stop_grad_norm_threshold = getattr(args, "early_stop_grad_norm_threshold", 1e-5)
     zero_miss_streak = 0
+    plateau_count = 0
+    grad_plateau_count = 0
+    best_epoch_loss = float("inf")
     shuffle_datasets = True
     fold_time_limit_seconds = getattr(args, "fold_time_limit_seconds", None)
     fold_start_time = time.time()
@@ -295,6 +366,8 @@ def main(train_dataset, test_dataset, config, args, model, checkpoint_path=None,
         epoch_start = time.time()
         epoch_total_miss = 0
         epoch_loss_sum = 0.0
+        epoch_grad_norm_sum = 0.0
+        epoch_grad_updates = 0
         epoch_c_miss_total = 0
         epoch_r_miss_total = 0
         dataset_order = (
@@ -379,6 +452,12 @@ def main(train_dataset, test_dataset, config, args, model, checkpoint_path=None,
                 # loss = criterion_c(out_concepts, c_targets_batch) + criterion_r(out_roles, r_targets_batch)
                 
                 loss.backward()
+                grad_norm_sq = 0.0
+                for param in model.parameters():
+                    if param.grad is not None:
+                        grad_norm_sq += param.grad.detach().pow(2).sum().item()
+                epoch_grad_norm_sum += math.sqrt(grad_norm_sq)
+                epoch_grad_updates += 1
                 optimizer.step()
 
                 # Add loss to average loss for whole dataset
@@ -443,9 +522,11 @@ def main(train_dataset, test_dataset, config, args, model, checkpoint_path=None,
         time_stats.append(epoch_time)
         num_datasets = len(train_dataset)
         epoch_avg_loss = epoch_loss_sum / num_datasets
+        epoch_avg_grad_norm = epoch_grad_norm_sum / max(epoch_grad_updates, 1)
         log(
             f"Epoch {epoch:4d} | Total time taken: {epoch_time:.4f} seconds | "
             f"avg_loss={epoch_avg_loss:.4f} | "
+            f"avg_grad_norm={epoch_avg_grad_norm:.4e} | "
             f"miss(c,r)=({epoch_c_miss_total},{epoch_r_miss_total})"
         )
         if lr_scheduler is not None:
@@ -455,10 +536,43 @@ def main(train_dataset, test_dataset, config, args, model, checkpoint_path=None,
                 lr_scheduler.step()
         total_accs.append((sum([i[0] for i in accs])/len(accs), sum([i[1] for i in accs])/len(accs)))
 
+        if epoch_avg_loss < best_epoch_loss - early_stop_min_delta:
+            best_epoch_loss = epoch_avg_loss
+            plateau_count = 0
+        else:
+            plateau_count += 1
+
+        if epoch_avg_grad_norm <= early_stop_grad_norm_threshold:
+            grad_plateau_count += 1
+        else:
+            grad_plateau_count = 0
+
         if epoch_total_miss == 0:
             zero_miss_streak += 1
         else:
             zero_miss_streak = 0
+
+        should_stop, stop_reason = plateau_stop_criterion(
+            current_loss=epoch_avg_loss,
+            best_loss=best_epoch_loss,
+            grad_norm=epoch_avg_grad_norm,
+            stop_patience=early_stop_patience,
+            min_delta=early_stop_min_delta,
+            grad_norm_threshold=early_stop_grad_norm_threshold,
+            mode=early_stop_mode,
+            plateau_count=plateau_count,
+            grad_plateau_count=grad_plateau_count,
+        )
+
+        if should_stop:
+            log(f"Early stopping at epoch {epoch}: {stop_reason}")
+            log("Running one additional test round before stopping.")
+            if checkpoint_path is not None:
+                os.makedirs(checkpoint_path, exist_ok=True)
+                torch.save(model.state_dict(), Path(checkpoint_path)/f"checkpoint_final.pt")
+                log(f"Saved final model checkpoint to {Path(checkpoint_path)/f'checkpoint_final.pt'}")
+            test_totals, per_dataset_totals = run_test_round(f"epoch {epoch} (final)")
+            return result_with_details(test_totals, per_dataset_totals)
 
         if zero_miss_streak >= early_stop_patience:
             log( f"Early stopping at epoch {epoch}: training misclassifications were 0 for {early_stop_patience} consecutive epochs.")

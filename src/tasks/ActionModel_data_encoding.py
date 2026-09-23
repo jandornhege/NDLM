@@ -11,6 +11,7 @@ import pymimir.advanced.search as search
 import torch
 import json
 # import ffn_main_general_data as ffn_main
+import ndlm.baselines as baselines
 import ndlm.configs as Config
 import ndlm.modules as modules
 import time
@@ -482,21 +483,75 @@ def load_model_from_checkpoint(checkpoint_file, checkpoint_args, config, action_
     in_roles = checkpoint_args.io_dimensions[action_name]["in_roles"]
     out_concepts = checkpoint_args.io_dimensions[action_name]["out_concepts"]
     out_roles = checkpoint_args.io_dimensions[action_name]["out_roles"]
-    # if action_name == "unload-airplane" or action_name == "unload-truck":
-    #     checkpoint_args.hidden_roles = 5
-    #     checkpoint_args.hidden_concepts = 5
-    # else:
-    #     checkpoint_args.hidden_roles = 10
-    #     checkpoint_args.hidden_concepts = 10
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    if checkpoint_args.model=="NDLM":
+
+    model_name = getattr(checkpoint_args, "model", "NDLM")
+    if model_name == "NDLM":
         model = modules.MultiLayerNDLM(in_concepts, in_roles, out_concepts, out_roles, config).to(device)
-    elif checkpoint_args.model=="NLM":
+    elif model_name == "NLM":
         model = layer.NLM_to_NDLM_Adapter(in_concepts, in_roles, out_concepts, out_roles, checkpoint_args).to(device)
+    elif model_name == "MLP":
+        model = baselines.PairwiseMLP(
+            in_concepts,
+            in_roles,
+            out_concepts,
+            out_roles,
+            hidden_size=getattr(checkpoint_args, "baseline_hidden_size", 64),
+        ).to(device)
+    elif model_name == "GNN":
+        model = baselines.MessagePassingPairClassifier(
+            in_concepts,
+            in_roles,
+            out_concepts,
+            out_roles,
+            hidden_size=getattr(checkpoint_args, "baseline_hidden_size", 64),
+            num_layers=getattr(checkpoint_args, "baseline_layers", 3),
+        ).to(device)
+    elif model_name == "2GNN":
+        model = baselines.TwoGNN(
+            in_concepts,
+            in_roles,
+            out_concepts,
+            out_roles,
+            hidden_size=getattr(checkpoint_args, "baseline_hidden_size", 64),
+            num_layers=getattr(checkpoint_args, "baseline_layers", 3),
+        ).to(device)
+    elif model_name == "3GNN":
+        model = baselines.ThreeGNN(
+            in_concepts,
+            in_roles,
+            out_concepts,
+            out_roles,
+            hidden_size=getattr(checkpoint_args, "baseline_hidden_size", 64),
+            num_layers=getattr(checkpoint_args, "baseline_layers", 3),
+            max_objects=getattr(checkpoint_args, "three_gnn_max_objects", 32),
+        ).to(device)
+    elif model_name == "EdgeTransformer":
+        model = baselines.EdgeTransformer(
+            in_concepts,
+            in_roles,
+            out_concepts,
+            out_roles,
+            hidden_size=getattr(checkpoint_args, "baseline_hidden_size", 64),
+            num_layers=getattr(checkpoint_args, "baseline_layers", 3),
+            heads=getattr(checkpoint_args, "baseline_heads", 4),
+        ).to(device)
+    elif model_name == "PPGN":
+        model = baselines.PPGN(
+            in_concepts,
+            in_roles,
+            out_concepts,
+            out_roles,
+            hidden_size=getattr(checkpoint_args, "baseline_hidden_size", 64),
+            num_layers=getattr(checkpoint_args, "baseline_layers", 3),
+            mlp_depth=getattr(checkpoint_args, "baseline_ppgn_depth", 2),
+        ).to(device)
+    else:
+        raise ValueError(f"Unsupported model type for checkpoint reload: {model_name!r}")
+
     log(action_name)
     log(checkpoint_args.io_dimensions[action_name])
 
-    
     state_dict = torch.load(checkpoint_file, map_location=device)
     preview_n = getattr(checkpoint_args, "state_dict_preview_n", 10)
     # _log_state_dict_shapes(action_name, state_dict, model=model, n=preview_n)
@@ -508,6 +563,7 @@ def load_model_from_checkpoint(checkpoint_file, checkpoint_args, config, action_
 
 
 def test_policy_from_checkpoint_models(checkpoint_args, exp_args, config):
+    checkpoint_args.data_path = exp_args.data_path
     domain_information = load_domain_information(checkpoint_args)
     # _ , domain_path, train_problem_paths, test_problem_paths, max_states_train, max_states_test = opt_GP_data_paths[domain]
     

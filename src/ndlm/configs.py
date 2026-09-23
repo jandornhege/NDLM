@@ -49,7 +49,7 @@ class config_object:
         # 512 MiB comfortably covers a single step up to ~180 objects at
         # 10 hidden roles, while leaving headroom for the CUDA context
         # and other tensors when training on a fractional GPU shard.
-        self.STRICT_RR_CHUNK_BYTES = 32 * 2**20
+        self.STRICT_RR_CHUNK_BYTES = 256 * 2**20
 
         # self.NLM_RESIDUAL = True
         # self.NLM_EXCLUDE_SELF = True

@@ -41,4 +41,5 @@ python tasks/learn_task.py \
 	--model NLM \
 	--dump-dir /work/rleap1/jan.dornhege/NDLM/outputs/NLM_ACTION_MODEL_prec/$CONFIG/$TASK_NAME \
 	--config-file /work/rleap1/jan.dornhege/NDLM/src/ndlm/config_files/$CONFIG.json \
-    --precondition
+    --precondition \
+	--full-applicability

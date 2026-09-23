@@ -1,0 +1,80 @@
+(py3.12_graph_separator) ) (base) jan.dornhege@glukose:/work/rleap1/jan.dornhege$ python NDLM/other/graph_exp_analyser.py 
+BEST CONFIGS BY DOMAIN
+============================================================================================================================================
+
+[COLLAB]
+RANK | CONFIG                                                                                     | EPOCH |  VAL_ACC |  VAL_LOSS |  TRAIN_ACC
+--------------------------------------------------------------------------------------------------------------------------------------------
+   1 | 10fold_cross_validationCOLLAB2026_09_14_19_12_34_parameter_ndlm_strict_L4_HC20_HR20_identity_noTC_noR_noIR_noFFN_LR0.0005_DR0.5_WD0.0001 |     3 |   0.7180 |    0.5958 |     0.7002
+
+[IMDBBINARY]
+RANK | CONFIG                                                                                     | EPOCH |  VAL_ACC |  VAL_LOSS |  TRAIN_ACC
+--------------------------------------------------------------------------------------------------------------------------------------------
+   1 | 10fold_cross_validationIMDBBINARY2026_09_14_19_12_34_parameter_ndlm_strict_L4_HC20_HR20_identity_noTC_noR_noIR_noFFN_LR0.0005_DR0.5_WD0.0001 |    39 |   0.7100 |    0.5921 |     0.7167
+
+[IMDBMULTI]
+RANK | CONFIG                                                                                     | EPOCH |  VAL_ACC |  VAL_LOSS |  TRAIN_ACC
+--------------------------------------------------------------------------------------------------------------------------------------------
+   1 | 10fold_cross_validationIMDBMULTI2026_09_14_19_12_34_parameter_ndlm_strict_L4_HC20_HR20_identity_noTC_noR_noIR_noFFN_LR0.0005_DR0.75_WD0.0001 |   140 |   0.5000 |    1.0650 |     0.5400
+
+[MUTAG]
+RANK | CONFIG                                                                                     | EPOCH |  VAL_ACC |  VAL_LOSS |  TRAIN_ACC
+--------------------------------------------------------------------------------------------------------------------------------------------
+   1 | 10fold_cross_validationMUTAG2026_09_14_19_12_34_parameter_ndlm_strict_L4_HC20_HR20_identity_noTC_noR_noIR_noFFN_LR0.0005_DR1_WD0.0001 |   210 |   0.9444 |    0.2466 |     0.9941
+
+[NCI1]
+RANK | CONFIG                                                                                     | EPOCH |  VAL_ACC |  VAL_LOSS |  TRAIN_ACC
+--------------------------------------------------------------------------------------------------------------------------------------------
+   1 | 10fold_cross_validationNCI12026_09_14_19_12_34_parameter_ndlm_strict_L4_HC20_HR20_identity_noTC_noR_noIR_noFFN_LR0.0005_DR0.75_WD0.0001 |    51 |   0.8102 |    0.9821 |     0.9670
+
+[NCI109]
+RANK | CONFIG                                                                                     | EPOCH |  VAL_ACC |  VAL_LOSS |  TRAIN_ACC
+--------------------------------------------------------------------------------------------------------------------------------------------
+   1 | 10fold_cross_validationNCI1092026_09_14_19_12_34_parameter_ndlm_strict_L4_HC20_HR20_identity_noTC_noR_noIR_noFFN_LR0.0005_DR0.75_WD0.0001 |   121 |   0.8422 |    0.9886 |     0.9973
+
+[PROTEINS]
+RANK | CONFIG                                                                                     | EPOCH |  VAL_ACC |  VAL_LOSS |  TRAIN_ACC
+--------------------------------------------------------------------------------------------------------------------------------------------
+   1 | 10fold_cross_validationPROTEINS2026_09_14_19_29_09_parameter_ndlm_strict_L4_HC10_HR10_sigmoid_noTC_noR_noIR_noFFN_LR0.0005_DR0.5_WD0.0001 |    48 |   0.8649 |    0.4408 |     0.7515
+================================================================================================================
+
+[COLLAB]
+RANK | CONFIG                                                                                     | EPOCH |  VAL_ACC |  VAL_LOSS |  TRAIN_ACC
+--------------------------------------------------------------------------------------------------------------------------------------------
+   1 | 10fold_cross_validationCOLLAB2026_09_13_10_14_25_parameter_ndlm_strict_L4_HC10_HR10_identity_noTC_noR_noIR_noFFN_LR0.0005_DR0.5_WD0.0001 |    40 |   0.7720 |    0.5278 |     0.7900
+
+[IMDBBINARY]
+RANK | CONFIG                                                                                     | EPOCH |  VAL_ACC |  VAL_LOSS |  TRAIN_ACC
+--------------------------------------------------------------------------------------------------------------------------------------------
+   1 | 10fold_cross_validationIMDBBINARY2026_09_13_10_14_25_parameter_ndlm_strict_L6_HC15_HR15_identity_noTC_noR_noIR_noFFN_LR0.0005_DR0.5_WD0.0001 |    45 |   0.7200 |    0.5601 |     0.7167
+
+[IMDBMULTI]
+RANK | CONFIG                                                                                     | EPOCH |  VAL_ACC |  VAL_LOSS |  TRAIN_ACC
+--------------------------------------------------------------------------------------------------------------------------------------------
+   1 | 10fold_cross_validationIMDBMULTI2026_09_14_14_08_18_cv_ndlm_strict_L4_HC10_HR10_identity_noTC_noR_IR_noFFN_LR0.0005_DR0.75_WD0.0001_fold1 |     6 |   0.5200 |    0.9993 |     0.4378
+
+[MUTAG]
+RANK | CONFIG                                                                                     | EPOCH |  VAL_ACC |  VAL_LOSS |  TRAIN_ACC
+--------------------------------------------------------------------------------------------------------------------------------------------
+   1 | 10fold_cross_validationMUTAG2026_09_13_10_14_25_parameter_ndlm_strict_L6_HC15_HR15_identity_noTC_noR_noIR_noFFN_LR0.0005_DR1_WD0.0001 |    47 |   0.9444 |    0.3925 |     0.8824
+
+[NCI1]
+RANK | CONFIG                                                                                     | EPOCH |  VAL_ACC |  VAL_LOSS |  TRAIN_ACC
+--------------------------------------------------------------------------------------------------------------------------------------------
+   1 | 10fold_cross_validationNCI12026_09_13_10_14_26_parameter_ndlm_strict_L4_HC10_HR10_identity_noTC_noR_IR_noFFN_LR0.0005_DR0.75_WD0.0001 |   223 |   0.8029 |    1.7996 |     0.9981
+
+[NCI109]
+RANK | CONFIG                                                                                     | EPOCH |  VAL_ACC |  VAL_LOSS |  TRAIN_ACC
+--------------------------------------------------------------------------------------------------------------------------------------------
+   1 | 10fold_cross_validationNCI1092026_09_13_10_14_25_parameter_ndlm_strict_L4_HC10_HR10_identity_noTC_noR_IR_noFFN_LR0.0005_DR0.75_WD0.0001 |    47 |   0.8155 |    0.7855 |     0.9529
+
+[PROTEINS]
+RANK | CONFIG                                                                                     | EPOCH |  VAL_ACC |  VAL_LOSS |  TRAIN_ACC
+--------------------------------------------------------------------------------------------------------------------------------------------
+   1 | 10fold_cross_validationPROTEINS2026_09_13_10_14_25_parameter_ndlm_strict_L4_HC10_HR10_identity_noTC_noR_noIR_noFFN_LR0.0005_DR0.5_WD0.0001 |    43 |   0.8739 |    0.4323 |     0.8164
+
+[PTC]
+RANK | CONFIG                                                                                     | EPOCH |  VAL_ACC |  VAL_LOSS |  TRAIN_ACC
+--------------------------------------------------------------------------------------------------------------------------------------------
+   1 | 10fold_cross_validationPTC2026_09_13_10_14_25_parameter_ndlm_strict_L4_HC10_HR10_identity_noTC_noR_IR_noFFN_LR0.0005_DR1_WD0.0001 |     8 |   0.8235 |    0.5997 |     0.6516
+((py3.12_graph_separator) ) (base) jan.dornhege@glukose:/work/rleap1/jan.dornhege$ 

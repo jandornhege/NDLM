@@ -1,0 +1,20 @@
+dataset | mean ± std
+MUTAG        |  0.9556 ± 0.0484
+PTC          |  0.7559 ± 0.0417 
+PROTEINS     |  0.7937 ± 0.0385
+NCI1         |  0.7886 ± 0.0243
+NCI109       |  0.7922 ± 0.0203
+COLLAB       |  0.6772 ± 0.0227
+IMDBBINARY   |  0.7550 ± 0.0329 
+IMDBMULTI    |  0.5280 ± 0.0284
+
+
+dataset      |  mean ± std
+MUTAG        |  0.8722 ± 0.1016
+PTC          |  0.6441 ± 0.0489
+PROTEINS     |  0.7838 ± nan
+NCI1         |  0.7822 ± 0.0155
+NCI109       |  0.7985 ± 0.0275
+COLLAB       |  0.6688 ± 0.0321
+IMDBBINARY   |  0.7125 ± 0.0096
+IMDBMULTI    |  0.5400 ± nan

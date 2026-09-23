@@ -25,6 +25,24 @@ OVERVIEW_RE = re.compile(
 )
 
 RUN_ID_HINTS = {"blocks","ActionModel", "RERUN", "RERUN_shard", "L1", "L2", "L3", "c0", "c1", "c2", "c3", "c4", "c5"}
+CONFIG_DIR_HINTS = {"eff", "prec", "sandbox", "test_only", "ActionModel", "optGP"}
+
+
+def is_run_like_name(name: str) -> bool:
+    value = str(name).strip()
+    if not value:
+        return False
+    if value.startswith("run_") or value.startswith("output_") or value.startswith("RERUN"):
+        return True
+    if value in RUN_ID_HINTS:
+        return True
+    if re.fullmatch(r"c\d+", value):
+        return False
+    if value.isdigit():
+        return True
+    if re.fullmatch(r"\d+_\d+", value):
+        return True
+    return False
 
 
 def normalize_run_name(run_name: str) -> str:
@@ -47,28 +65,45 @@ def infer_domain_and_run(log_path: Path, root: Path) -> tuple[str, str]:
         if part == "test_only" and index + 2 < len(rel_parts):
             return rel_parts[index + 1], rel_parts[index + 2]
 
-    parts = rel_parts[:-1]
-    if not parts:
+    ancestors = list(rel_parts[:-1])
+    if not ancestors:
         return "unknown", log_path.parent.name
 
-    run_name = None
-    domain_name = None
-
-    for name in reversed(parts):
-        if name.startswith("output_") or name.isdigit() or name in RUN_ID_HINTS:
-            if run_name is None and (name.isdigit() or name.startswith("output_")):
-                run_name = name
+    for index in range(len(ancestors) - 1, -1, -1):
+        part = ancestors[index]
+        if part in CONFIG_DIR_HINTS or re.fullmatch(r"c\d+", str(part)):
             continue
-        domain_name = name
-        break
+        if is_run_like_name(part):
+            run_name = part
+            for candidate_index in range(index - 1, -1, -1):
+                candidate = ancestors[candidate_index]
+                if candidate in CONFIG_DIR_HINTS or re.fullmatch(r"c\d+", str(candidate)):
+                    continue
+                if not is_run_like_name(candidate):
+                    return candidate, run_name
+            for candidate_index in range(index + 1, len(ancestors)):
+                candidate = ancestors[candidate_index]
+                if candidate in CONFIG_DIR_HINTS or re.fullmatch(r"c\d+", str(candidate)):
+                    continue
+                if not is_run_like_name(candidate):
+                    return candidate, run_name
+            break
 
-    if domain_name is None:
-        domain_name = parts[0]
+    # Legacy layout: root/<domain>/<timestamp>/output.log
+    if len(ancestors) >= 2:
+        domain_name = ancestors[-2]
+        run_name = ancestors[-1]
+        if is_run_like_name(run_name) and not is_run_like_name(domain_name):
+            return domain_name, run_name
 
-    if run_name is None:
-        run_name = log_path.parent.name
+    for name in reversed(ancestors):
+        if is_run_like_name(name):
+            continue
+        if name in CONFIG_DIR_HINTS or re.fullmatch(r"c\d+", str(name)):
+            continue
+        return name, log_path.parent.name
 
-    return domain_name, run_name
+    return ancestors[-1], log_path.parent.name
 
 
 def find_matching_sandbox_log(root: Path, domain: str, run: str) -> Path | None:
@@ -117,40 +152,18 @@ def iter_action_model_logs(root: Path):
             yield log_path
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "root",
-        nargs="?",
-        default="outputs/NDLM_OPTGP_final_0_shard",
-        help="Root directory to scan for ActionModel output.log files.",
-    )
-    parser.add_argument(
-        "--by-domain",
-        action="store_true",
-        help="Print aggregated totals per domain instead of per run/action rows.",
-    )
-    args = parser.parse_args()
-
-    root = Path(args.root).resolve()
-    if not root.exists():
-        raise SystemExit(f"Root does not exist: {root}")
-
-    domain_run_action = defaultdict(list)
-    domain_totals = defaultdict(int)
-    run_totals = defaultdict(int)
-    perfect_runs = defaultdict(int)
-    train_perfect_runs = defaultdict(int)
+def summarize_root(root: Path, *, base_root: Path | None = None, domain_run_action=None, domain_totals=None, run_totals=None, perfect_runs=None, train_perfect_runs=None):
+    if base_root is None:
+        base_root = root
     seen_any = False
-
     for log_path in iter_action_model_logs(root):
         records = parse_log(log_path)
         if not records:
             continue
         seen_any = True
 
-        domain, run = infer_domain_and_run(log_path, root)
-        sandbox_log = find_matching_sandbox_log(root, domain, run)
+        domain, run = infer_domain_and_run(log_path, base_root)
+        sandbox_log = find_matching_sandbox_log(base_root, domain, run)
         if sandbox_log is not None and sandbox_log != log_path:
             sandbox_records = parse_log(sandbox_log)
             if sandbox_records:
@@ -182,6 +195,108 @@ def main() -> int:
             run_totals[(domain, run)] += total
         perfect_runs[domain] += int(run_perfect)
         train_perfect_runs[domain] += int(run_train_perfect)
+
+    return seen_any
+
+
+def iter_roots(root: Path, iterate: bool):
+    if not iterate:
+        yield root
+        return
+
+    candidate_dirs: set[Path] = set()
+    for log_path in sorted(root.rglob("output.log")):
+        run_dir = log_path.parent
+        rel_parts = run_dir.relative_to(root).parts
+        if len(rel_parts) >= 4:
+            candidate_dirs.add(run_dir.parents[1])
+        elif len(rel_parts) >= 2:
+            candidate_dirs.add(run_dir.parent)
+        else:
+            candidate_dirs.add(root)
+
+    if not candidate_dirs:
+        yield root
+        return
+
+    for candidate in sorted(candidate_dirs):
+        yield candidate
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "root",
+        nargs="?",
+        default="outputs/NDLM_OPTGP_final_0_shard",
+        help="Root directory to scan for ActionModel output.log files.",
+    )
+    parser.add_argument(
+        "--by-domain",
+        action="store_true",
+        help="Print aggregated totals per domain instead of per run/action rows.",
+    )
+    parser.add_argument(
+        "--iterate",
+        "--itterate",
+        dest="iterate",
+        action="store_true",
+        help="Process each run directory containing an output.log under the root and aggregate the results across them.",
+    )
+    args = parser.parse_args()
+
+    root = Path(args.root).resolve()
+    if not root.exists():
+        raise SystemExit(f"Root does not exist: {root}")
+
+    if args.iterate:
+        for candidate_root in iter_roots(root, True):
+            local_domain_run_action = defaultdict(list)
+            local_domain_totals = defaultdict(int)
+            local_run_totals = defaultdict(int)
+            local_perfect_runs = defaultdict(int)
+            local_train_perfect_runs = defaultdict(int)
+            seen_any = summarize_root(
+                candidate_root,
+                base_root=root,
+                domain_run_action=local_domain_run_action,
+                domain_totals=local_domain_totals,
+                run_totals=local_run_totals,
+                perfect_runs=local_perfect_runs,
+                train_perfect_runs=local_train_perfect_runs,
+            )
+            if not seen_any:
+                continue
+
+            header = f"Summary for {candidate_root.relative_to(root) if candidate_root != root else root.name}"
+            print(f"\n{header}")
+            print(f"{'domain':<28} {'runs':>6} {'perfect_runs':>12} {'actions':>8} {'misclassifications':>18}")
+            print("-" * 90)
+            for domain in sorted({d for d, _, _ in local_domain_run_action.keys()}):
+                actions = {action for d, _, action in local_domain_run_action if d == domain}
+                runs = {run for d, run, _ in local_domain_run_action if d == domain}
+                total = sum(v["total"] for (d, _, _), v in ((k, v) for k, v in local_domain_run_action.items() if k[0] == domain))
+                print(f"{domain:<28} {len(runs):>6} {local_perfect_runs.get(domain, 0):>12} {len(actions):>8} {total:>18}")
+        return 0
+
+    domain_run_action = defaultdict(list)
+    domain_totals = defaultdict(int)
+    run_totals = defaultdict(int)
+    perfect_runs = defaultdict(int)
+    train_perfect_runs = defaultdict(int)
+    seen_any = False
+
+    for candidate_root in iter_roots(root, False):
+        candidate_seen = summarize_root(
+            candidate_root,
+            base_root=root,
+            domain_run_action=domain_run_action,
+            domain_totals=domain_totals,
+            run_totals=run_totals,
+            perfect_runs=perfect_runs,
+            train_perfect_runs=train_perfect_runs,
+        )
+        seen_any = seen_any or candidate_seen
 
     if not seen_any:
         raise SystemExit(
@@ -251,4 +366,8 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    try:
+        raise SystemExit(main())
+    except BrokenPipeError:
+        # This can happen when piping output to head/tail. Exit cleanly.
+        pass
